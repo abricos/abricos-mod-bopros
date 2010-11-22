@@ -1,0 +1,374 @@
+<!--{panel}-->
+<div class='hd'>Доска проектов</div>
+<div class='bd'>
+	<div id="{i#widget}"></div>
+</div>
+
+<!--{widget}-->
+<table style="width: 100%"><tbody><tr>
+	<td>
+		<div style="height: 18px; width: 30px; display: inline;">
+			<img src="/images/loading.gif" id="{i#wait}" style="display: none"/>
+		</div>
+		<div style="display: inline;">
+			<a href="#" id="{i#bappend}">Создать проект</a>
+		</div>
+	</td>
+	<td style="text-align: right;">
+		<a href="#" id="{i#help}" style="margin-right: 10px;">Помощь</a>
+		<a href="#" id="{i#brefresh}">Обновить</a>
+	</td>
+</tr></tbody></table>
+<div id="{i#container}" style="width: 100%; height: 300px; overflow-y: scroll; margin-bottom: 10px; margin-top: 8px; padding-bottom: 20px; border:1px solid #CBCBCB;">
+	<div id="{i#table}">
+		Идет загрузка проектов. Пожалуйста, подождите...
+	</div>
+</div>
+
+<!--{table}-->
+<table class="bk-table-def" style="border: 0">
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{rowwait}-->
+<tr valign="top">
+	<td colspan="5">Идет загрузка данных...</td>
+</tr>
+
+<!--{rowautor}-->
+<tr valign="top">
+	<td colspan="5" style="text-align: center; font-size: 112%; padding: 7px;">
+		<a href="#" class="show-user-profile user-{v#uid}">{v#avatar}</a>
+		<a href="#" class="show-user-profile user-{v#uid}">
+			<span style="vertical-align: top; color: black; margin-left: 5px;">{v#unm}</span>
+		</a>
+	</td>
+</tr>
+
+<!--{row}-->
+<tr valign="top">
+	<td><span style="color: red; font-size: 9px; display: {v#isnew};">new</span>&nbsp;</td>
+	<td>
+		<a href="#" id="{i#view}-{v#id}" title="Открыть проект">{v#tl}</a>&nbsp;
+		(
+			<span title="Кол-во комментариев">{v#cmt}</span>
+			<span style="display: {v#iscmtnew}">
+				&nbsp;
+				<span title="Из них новых" style="color: red;">+{v#cmtn}</span>
+			</span>
+		)
+	</td>
+	<td><a href="#" id="{i#publish}-{v#id}" style="display: {v#ispublish}">Опубликовать</a></td>
+	<td>
+		<a href="#" id="{i#edit}-{v#id}" style="display: {v#isedit}">
+			<img id="{i#editimg}-{v#id}" src="/modules/bopros/images/edit.gif" alt="Править" title="Редактировать" />		
+		</a>
+	</td>
+	<td>
+		<a href="#" id="{i#remove}-{v#id}" style="display: {v#isremove}">
+			<img id="{i#removeimg}-{v#id}" src="/modules/bopros/images/remove.gif" alt="В архив" title="Переместить проект в архив" />		
+		</a>
+	</td>
+</tr>
+
+
+<!--{prjrow}-->
+<div style="display: block;">
+	<div style="
+			display: block; 
+			height:22px; margin-left:24px; margin-top:10px;
+		">
+		<div style="color:#99CC33; font-weight:bold; display: inline; ">{v#unm}</div>
+		<div style="padding-left: 10px; color: #777755; display: inline; font-size: 10px;">{v#dl}</div>
+	</div>
+	<div style="padding:0 3px 0 15px;">{v#msg}</div>
+</div>
+
+<!--{prjremovepanel}-->
+<div class='hd'>Удаление проекта</div>
+<div class='bd'>
+	<div class="field">
+		<p>Вы действительно хотите переместить проект <strong>"{v#tl}"</strong> в архив?</p>
+		<p>Примечание: Проекты в архиве перестают быть доступными пользователям.</p>
+		<div class="buttons right">
+			<input type="button" value="Переместить в архив" id="{i#bremove}" class="btn" />
+			<input type="button" value="Отмена" id="{i#bcancel}" class="btn" />
+		</div>
+	</div>
+</div>
+
+
+<!--{prjpanel}-->
+<div class='hd'>{v#tl}</div>
+<div class='bd'>
+	<div id="{i#widget}"></div>
+</div>
+
+<!--{prjwidget}-->
+<div class="field"">
+	<table style="width: 100%"><tbody><tr>
+		<td>
+			Автор: <strong>{v#unm}</strong>&nbsp;&nbsp;Дата: <strong>{v#pb}<span style="display: {v#ispb}">Не опубликован</span></strong>
+		</td>
+		<td>
+			<a id="{i#broles}" href="#" title="Посмотреть список прав пользователей/групп в этом проекте">Список прав</a>
+		</td>
+	</tr></tbody></table>
+	
+	<div style="margin-top: 20px; position: relative; "> 
+		<div id="{i#container}" style="width: 100%; height: 400px; overflow-y: scroll; border:1px solid #CBCBCB;">
+			<div style="padding: 8px 36px 15px 10px;" id="{i#list}">
+				<div id="{i#body}">
+					<h3>{v#tl}</h3>
+					{v#bd}
+				</div>
+				<div id="{i#comment}" >
+					Идет загрузка данных. Пожалуйста, подождите...
+				</div>
+			</div>
+		</div>
+		<div id="{i#manblock}"></div>
+	</div>
+</div>
+
+<!--{prjpanel404}-->
+<div class='hd'>Проект не найден</div>
+<div class='bd'>
+	<div class="field">
+		<h3>Ошибка: проект не найден</h3>
+		<p>Возможные причины: автор удалил проект или закрыл права на его просмотр.</p>
+	</div>
+</div>
+
+<!--{prjrolepanel}-->
+<div class='hd'>Роли в проекте</div>
+<div class='bd'>
+	<div id="{i#widget}"></div>
+</div>
+
+<!--{prjrolewidget}-->
+<div class="field">
+	<h3>
+		Проект:&nbsp;{v#tl}
+	</h3>
+	<p>Права пользователей/групп на этот проект:</p>
+	<div id="{i#tableusr}" style="height: 150px; overflow-y: auto">
+		<table class="bk-table-def">
+			<thead>
+				<tr>
+					<th>Пользователь/Группа</th>
+					<th>Чтение</th>
+					<th>Запись</th>
+				</tr>
+			</thead>
+			<tbody>{v#rows}</tbody>
+		</table>
+	</div>
+</div>
+
+<!--{prjrolerow}-->
+<tr valign="top">
+	<td>{v#nm}</td>
+	<td><input id="{i#r}-{v#id}" type="checkbox" {v#r} readonly="readonly" /></td>
+	<td><input id="{i#w}-{v#id}" type="checkbox" {v#w} readonly="readonly" /></td>
+</tr>
+
+<!--{prjeditpanel}-->
+<div class='hd'>Проект</div>
+<div class='bd'>
+	<div class="field">
+		<div class="buttons" style="float: right;">
+			<input type="button" value="Сохранить" id="{i#bsave}" class="btn" style="display: none" />
+			<input type="button" value="Опубликовать" id="{i#bsavepub}" class="btn" style="display: none" />
+			<input type="button" value="Сохранить как черновик" id="{i#bsavedraft}" class="btn" style="display: none" />
+			<input type="button" value="Отмена" id="{i#bcancel}" class="btn" />
+		</div>
+	</div>
+	<div id="{i#widget}"></div>
+	<div style="clear: both;"></div>
+</div>
+
+<!--{prjeditwidget}-->
+<div class="field" style="width: 780px;">
+	<p>
+		Название проекта:&nbsp;<input id="{i#tl}" type="text" style="width: 300px;"/>
+	</p>
+	<textarea id="{i#editor}" style="width: 740px; height: 200px"></textarea>
+	
+	<h3>Права пользователей/групп на этот проект:</h3>
+	
+	<table style="width: 100%"><tbody><tr>
+		<td style="width: 50%">
+			<div class="buttons right">
+				<input type="button" id="{i#badduser}" value="Добавить пользователя"/>
+			</div>
+			<div id="{i#tableusr}" style="height: 150px; overflow-y: auto"></div>
+		</td>
+	<td style="width: 50%">
+		<div class="buttons right">
+			<input type="button" id="{i#baddgroup}" value="Добавить группу"/>
+		</div>
+		<div id="{i#tablegrp}" style="height: 150px; overflow-y: auto; margin-left: 5px;"></div>
+	</td>
+	</tr></tbody></table>	
+</div>
+
+<!--{prjedtableusr}-->
+<table class="bk-table-def">
+	<thead>
+		<tr>
+			<th>Пользователь</th>
+			<th>Чтение</th>
+			<th>Запись</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{prjedrowwaitusr}-->
+<tr valign="top">
+	<td colspan="4">Идет загрузка данных...</td>
+</tr>
+
+<!--{prjedrowusr}-->
+<tr valign="top">
+	<td>{v#unm}</td>
+	<td><input id="{i#r}-{v#id}" type="checkbox" {v#r} /></td>
+	<td><input id="{i#w}-{v#id}" type="checkbox" {v#w} /></td>
+	<td><a href="#" id="{i#remove}-{v#id}">Удалить</a></td>
+</tr>
+
+<!--{prjedtablegrp}-->
+<table class="bk-table-def">
+	<thead>
+		<tr>
+			<th>Группа</th>
+			<th>Чтение</th>
+			<th>Запись</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{prjedrowwaitgrp}-->
+<tr valign="top">
+	<td colspan="4">Идет загрузка данных...</td>
+</tr>
+
+<!--{prjedrowgrp}-->
+<tr valign="top">
+	<td>{v#gnm}</td>
+	<td><input id="{i#r}-{v#id}" type="checkbox" {v#r} /></td>
+	<td><input id="{i#w}-{v#id}" type="checkbox" {v#w} /></td>
+	<td><a href="#" id="{i#remove}-{v#id}">Удалить</a></td>
+</tr>
+
+<!--{finduserpanel}-->
+<div class='hd'>Поиск</div>
+<div class='bd'>
+	<div class="field">
+		<div id="{i#findact}">
+			<table style="margin-top: 10px;"><tbody>
+				<tr>
+					<td colspan="2">
+						<h3>Поиск по имени и фамилии</h3>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 150px;">Имя </td>
+					<td><input id="{i#firstname}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+				<tr>
+					<td>Фамилия </td>
+					<td><input id="{i#lastname}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<h3>Поиск по учетной записи</h3>
+					</td>
+				</tr>
+				<tr>
+					<td>Учетная запись пользователя</td>
+					<td><input id="{i#username}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+			</tbody></table>
+			<div class="buttons">
+				<input type="button" value="Найти" id="{i#bfind}" />
+				<div id="{i#wait}" style="display: none;"><img src="/images/loading.gif" />идет поиск...</div>
+			</div>
+		</div>
+		<h3>Результат поиска</h3>
+		<div id="{i#result}" style="height: 200px;"></div>
+	</div>
+	<div class="field">
+		<div class="buttons right">
+			<input type="button" value="Закрыть" id="{i#bclose}" />
+		</div>
+	</div>
+</div>
+
+<!--{firestable}-->
+<table id="{i#id}" class="bk-table-def" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th>Пользователь</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{firesrow}-->
+<tr valign="top">
+	<td>{v#unm}</td>
+	<td>
+		<a href="#" id="{i#append}-{v#id}">Добавить</a>
+	</td>
+</tr>
+
+<!--{firesrowwait}-->
+<tr valign="top">
+	<td colspan="2">Идет загрузка данных. Пожалуйста, подождите...</td>
+</tr>
+
+
+<!--{groupappanel}-->
+<div class='hd'>Группы</div>
+<div class='bd'>
+	<div class="field">
+		<div id="{i#table}" style="height: 200px;"></div>
+	</div>
+	<div class="field">
+		<div class="buttons right">
+			<input type="button" value="Закрыть" id="{i#bclose}" />
+		</div>
+	</div>
+</div>
+
+<!--{groupaptable}-->
+<table id="{i#id}" class="bk-table-def" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th>Группа</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{groupaprow}-->
+<tr valign="top">
+	<td>{v#gnm}</td>
+	<td>
+		<a href="#" id="{i#append}-{v#id}">Добавить</a>
+	</td>
+</tr>
+
+<!--{groupaprowwait}-->
+<tr valign="top">
+	<td colspan="2">Идет загрузка данных. Пожалуйста, подождите...</td>
+</tr>
+
+
