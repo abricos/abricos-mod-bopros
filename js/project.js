@@ -11,7 +11,8 @@ Component.requires = {
 	mod:[
         {name: 'user', files: ['permission.js']},
 		{name: 'sys', files: ['data.js', 'container.js','wait.js','editor.js']},
-        {name: 'uprofile', files: ['viewer.js']}
+        {name: 'uprofile', files: ['viewer.js']},
+        {name: 'bopros', files: ['roles.js']}
 	]
 };
 Component.entryPoint = function(){
@@ -21,25 +22,11 @@ Component.entryPoint = function(){
 		L = YAHOO.lang;
 	
 	var NS = this.namespace, 
-		TMG = this.template; 
-	
-	var API = NS.API;
+		TMG = this.template,
+		API = NS.API,
+		R = NS.roles;
 	
 	var UP = Brick.mod.uprofile;
-	
-	// загрузка роли пользователя
-	var isViewRole = false,
-		isWriteRole = false,
-		isAdminRole = false;
-	
-	var loadRoles = function(callback){
-		Brick.Permission.load(function(){
-			isViewRole = Brick.Permission.check('bopros', '10') == 1;
-			isWriteRole = Brick.Permission.check('bopros', '30') == 1;
-			isAdminRole = Brick.Permission.check('bopros', '50') == 1;
-			callback();
-		});
-	};
 
 	if (!NS.data){
 		NS.data = new Brick.util.data.byid.DataSet('bopros');
@@ -55,8 +42,8 @@ Component.entryPoint = function(){
 		get: function(id){
 			return CACHE.project[id];
 		}
-		
 	};
+	NS.CACHE = CACHE;
 	
 	var buildTemplate = function(w, templates){
 		var TM = TMG.build(templates), T = TM.data, TId = TM.idManager;
@@ -70,222 +57,6 @@ Component.entryPoint = function(){
 		};
 		return (emp(user['fnm']) && emp(user['lnm'])) ? user['unm'] : user['fnm'] + ' ' + user['lnm']; 
 	};
-	
-	var BoardWidget = function(container){
-		this.init(container);
-	};
-	BoardWidget.prototype = {
-		init: function(container){
-			buildTemplate(this, 'widget,table,row,rowautor,rowwait');
-			container.innerHTML = this._TM.replace('widget');
-			
-			DATA.onStart.subscribe(this.dsEvent, this, true);
-			DATA.onComplete.subscribe(this.dsEvent, this, true);
-			DATA.isFill({
-				'board': DATA.get('board', true)
-			}) ? this.render() : this.renderWait();  
-			if (!isWriteRole){
-				this._TM.getEl('widget.bappend').style.display = 'none';
-			}
-		},
-		dsEvent: function(type, args){
-			if (args[0].checkWithParam('board')){
-				type == 'onComplete' ? this.render() : this.renderWait(); 
-			}
-		},
-		destroy: function(){
-			DATA.onComplete.unsubscribe(this.dsEvent);
-			DATA.onStart.unsubscribe(this.dsEvent);
-		},
-		renderWait: function(){
-			var TM = this._TM, T = this._T;
-			TM.getEl('widget.table').innerHTML = TM.replace('table', {'rows': T['rowwait']});
-		},
-		render: function(){
-			var TM = this._TM, lst = "", autorid = -1;
-			DATA.get('board').getRows().foreach(function(row){
-				var di = row.cell,
-					isnewcmt = !L.isNull(di['cmtn']) && di['cmtn'],
-					isnew = L.isNull(di['cn']),
-					myproject = di['uid'] == Brick.env.user.id;
-				
-				if (autorid != di['uid']){
-					autorid = di['uid'];
-					lst += TM.replace('rowautor', {
-						'unm': buildUserName(di),
-						'uid': di['uid'],
-						'avatar': UP.avatar.get45(di)
-					});
-				}
-				lst += TM.replace('row', {
-					'id': di['id'],
-					'uid': di['uid'],
-					'ispublish': (di['uid'] == Brick.env.user.id && di['pb'] == 0 ? '' : 'none'),
-					'isedit': myproject ? '' : 'none',
-					'unm': buildUserName(di),
-					'pb': Brick.dateExt.convert(di['pb']),
-					'cmt': di['cmt'],
-					'iscmtnew': (isnewcmt ? '' : 'none'),
-					'cmtn': (isnewcmt ? di['cmtn'] : '0'),
-					'isnew': (isnew ? '' : 'none'),
-					'isremove': myproject ? '' : 'none',
-					'tl': di['tl']
-				});
-			});
-			TM.getEl('widget.table').innerHTML = TM.replace('table', {'rows': lst});
-		},
-		onResize: function(rel){
-			var el = this._TM.getEl('widget.container');
-			el.style.height = (rel.height - 70)+'px';
-		},
-		refresh: function(){
-			DATA.get('board').clear();
-			DATA.request();
-		},
-		help: function(){			
-			Brick.f("bopros", "help", "showHelpPanel");
-		},
-		onClick: function(el){
-			var TId = this._TId, tp = TId['widget'];
-			switch(el.id){
-			case tp['bappend']: 
-				API.showProjectEditorPanel(0);
-				return true;
-			case tp['brefresh']: this.refresh(); return true;
-			case tp['help']: this.help(); return true;
-			}
-			
-			var prefix = el.id.replace(/([0-9]+$)/, '');
-			var numid = el.id.replace(prefix, "");
-			switch(prefix){
-			case (TId['row']['publish']+'-'):
-				this.projectPublish(numid);
-				return true;
-			case (TId['row']['edit']+'-'):
-			case (TId['row']['editimg']+'-'):
-				API.showProjectEditorPanel(numid);
-				return true;
-			case (TId['row']['remove']+'-'):
-			case (TId['row']['removeimg']+'-'):
-				this.projectRemove(numid);
-				return true;
-			case (TId['row']['view']+'-'):
-				this.projectShow(numid);
-				return true;
-			}
-
-			return false;
-		},
-		projectShow: function(projectid){
-			var __self = this;
-			API.showProjectPanel(projectid, {
-				'onLoadComments': function(){
-					__self.refresh();
-				}
-			});
-		},
-		projectPublish: function(projectid){
-			var __self = this;
-			Brick.ajax('bopros', {
-				'data': {
-					'do': 'projectpublish',
-					'projectid': projectid
-				},
-				'event': function(request){
-					var project = request.data;
-					if (!L.isNull(project)){ 
-						CACHE.project[project.id] = project;
-					}
-					__self.refresh();
-				}
-			});
-		},
-		projectRemove: function(projectid){
-			var row = DATA.get('board').getRows().getById(projectid);
-			if (L.isNull(row)){ return; }
-			var __self = this;
-			new ProjectRemovePanel(row.cell['tl'], function(){
-				Brick.ajax('bopros', {
-					'data': {
-						'do': 'projectremove',
-						'projectid': projectid
-					},
-					'event': function(request){
-						__self.refresh();
-					}
-				});				
-			});
-		}
-	};
-	NS.BoardWidget = BoardWidget;
-
-	var BoardPanel = function(frend){
-		this.frend = frend;
-		BoardPanel.superclass.constructor.call(this, {
-			fixedcenter: true, width: '790px', height: '400px',
-			overflow: false, 
-			controlbox: 1
-			//,state: Brick.widget.Panel.STATE_MAXIMIZED
-		});
-	};
-	YAHOO.extend(BoardPanel, Brick.widget.Panel, {
-		initTemplate: function(){
-			buildTemplate(this, 'panel');
-			return this._TM.replace('panel');
-		},
-		onLoad: function(){
-			this.boardWidget = new BoardWidget(this._TM.getEl('panel.widget'));
-			DATA.request();
-		},
-		onClick: function(el){
-			if (this.boardWidget.onClick(el)){ return true; }
-			return false;
-		},
-		destroy: function(){
-			this.boardWidget.destroy();
-			BoardPanel.superclass.destroy.call(this);
-		},
-		onResize: function(){
-			this.boardWidget.onResize(Dom.getRegion(this.body));
-		}
-	});
-	NS.BoardPanel = BoardPanel;
-	
-	API.showBoardPanel = function(){
-		loadRoles(function(){
-			new BoardPanel();
-		});
-	};
-
-	API.runApplication = function(){
-		API.showBoardPanel();
-	};
-	
-	var ProjectRemovePanel = function(prjTitle, callback){
-		this.prjTitle = prjTitle;
-		this.callback = callback;
-		ProjectRemovePanel.superclass.constructor.call(this, {
-			fixedcenter: true, width: '500px',
-			modal: true
-		});
-	};
-	YAHOO.extend(ProjectRemovePanel, Brick.widget.Panel, {
-		initTemplate: function(){
-			buildTemplate(this, 'prjremovepanel');
-			return this._TM.replace('prjremovepanel', {
-				'tl': this.prjTitle
-			});
-		},
-		onClick: function(el){
-			var tp = this._TId['prjremovepanel'];
-			switch(el.id){
-			case tp['bremove']: this.callback(); this.close(); return true;
-			case tp['bcancel']: this.close(); return true;
-			}
-			return false;
-		}
-	});
-	NS.ProjectRemovePanel = ProjectRemovePanel;
 	
 	var ProjectWidget = function(container, project, config){
 		config = L.merge({
@@ -414,7 +185,7 @@ Component.entryPoint = function(){
 			showProjectPanel(CACHE.project[projectid], config);
 			return;
 		}
-		loadRoles(function(){
+		R.load(function(){
 			Brick.widget.LoadPanel.show();
 			
 			Brick.ajax('bopros', {
@@ -697,7 +468,7 @@ Component.entryPoint = function(){
 			new ProjectEditorPanel(CACHE.project[projectid]);
 			return;
 		}
-		loadRoles(function(){
+		R.load(function(){
 			Brick.widget.LoadPanel.show();
 			
 			Brick.ajax('bopros', {

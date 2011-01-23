@@ -16,7 +16,7 @@ Component.entryPoint = function(){
 	
 	var app = new os.Application(this.moduleName);
 	app.icon = '/modules/bopros/images/app_icon.gif';
-	app.entryComponent = 'project';
+	app.entryComponent = 'board';
 	app.entryPoint = 'Brick.mod.bopros.API.runApplication';
 	
 	os.ApplicationManager.register(app);

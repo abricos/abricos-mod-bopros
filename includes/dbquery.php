@@ -9,6 +9,90 @@
  */
 
 class BoprosQuery {
+
+	/**
+	 * Список проектов (доступные этому пользователю включая свои)
+	 * со списком пользователей на каждый проект и их роли
+	 * 
+	 * @param CMSDatabase $db
+	 * @param unknown_type $userid
+	 * @param unknown_type $groupids
+	 */
+	public static function BoardProjectUsers(CMSDatabase $db, $userid, $groupids){
+		
+		/*
+			SELECT 
+				p.projectid + p.userid,
+				p.projectid as pid,
+				p.userid as uid,
+				1 as r, 1 as w
+			FROM ".$db->prefix."bps_project p
+			WHERE p.userid=".bkint($userid)." AND p.deldate=0
+		
+			UNION
+		/**/
+		
+		$sql = "
+			SELECT
+				CONCAT(ur1.projectid,'-',ur1.userid) as id,
+				ur1.projectid as pid,
+				ur1.userid as uid,
+				ur1.isread as r,
+				ur1.iswrite as w
+			FROM (
+				SELECT p.projectid
+				FROM ".$db->prefix."bps_project p
+				WHERE p.userid=".bkint($userid)." AND p.deldate=0
+				UNION
+				SELECT ur.projectid
+				FROM ".$db->prefix."bps_userrole ur
+				INNER JOIN ".$db->prefix."bps_project p ON p.projectid=ur.projectid
+				WHERE ur.userid=".bkint($userid)." AND p.deldate=0 AND p.publish>0
+			) ps
+			LEFT JOIN ".$db->prefix."bps_userrole ur1 ON ps.projectid=ur1.projectid
+		";
+	
+		return $db->query_read($sql);
+	}
+	
+	/**
+	 * Список пользователей участвующих на доске проектов
+	 * 
+	 * @param CMSDatabase $db
+	 * @param unknown_type $userid
+	 */
+	public static function BoardUsers(CMSDatabase $db, $userid){
+		$sql = "
+			SELECT
+				DISTINCT
+				u.userid as id,
+				u.username as unm,
+				u.firstname as fnm,
+				u.lastname as lnm,
+				u.avatar as avt
+			FROM (
+			
+				SELECT 
+					p.projectid,
+					p.userid
+				FROM ".$db->prefix."bps_project p
+				WHERE p.userid=".bkint($userid)." AND p.deldate=0
+				
+				UNION
+			
+				SELECT 
+					ur.projectid,
+					ur.userid
+				FROM ".$db->prefix."bps_userrole ur
+				INNER JOIN ".$db->prefix."bps_project p ON p.projectid=ur.projectid
+				WHERE ur.userid=".bkint($userid)." AND p.deldate=0 AND p.publish > 0
+			) ps
+			LEFT JOIN ".$db->prefix."bps_userrole ur1 ON ps.projectid=ur1.projectid
+			INNER JOIN ".$db->prefix."user u ON ur1.userid=u.userid
+		";
+	
+		return $db->query_read($sql);
+	}
 	
 	/**
 	 * Список проектов (доска проектов) доступных пользователю

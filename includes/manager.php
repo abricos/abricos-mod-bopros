@@ -56,6 +56,8 @@ class BoprosManager extends ModuleManager {
 		$p = $rows->p;
 		switch ($name){
 			case 'board': return $this->Board();
+			case 'boardusers': return $this->BoardUsers();
+			case 'boardprojectusers': return $this->BoardProjectUsers();
 			case 'grouplist': return $this->GroupList();
 		}
 		return null;
@@ -70,6 +72,17 @@ class BoprosManager extends ModuleManager {
 			case 'projectremove': return $this->ProjectRemove($d->projectid);
 		}
 		return null;
+	}
+	
+	public function BoardProjectUsers(){
+		if (!$this->IsViewRole()){ return null; }
+		$groupids = $this->user->info['group'];
+		return BoprosQuery::BoardProjectUsers($this->db, $this->userid, $groupids);
+	}
+
+	public function BoardUsers(){
+		if (!$this->IsViewRole()){ return null; }
+		return BoprosQuery::BoardUsers($this->db, $this->userid);
 	}
 	
 	public function Board(){
