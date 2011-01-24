@@ -112,13 +112,15 @@ Component.entryPoint = function(){
 				var ids = g.key.split(' ');
 				for (var n in ids){
 					if (Brick.env.user.id != ids[n]){  
-						var user = NS.data.get('boardusers').getRows().getById(ids[n]), 
-							udi = user.cell;
-						glst += TM.replace('grow', {
-							'unm': buildUserName(udi),
-							'uid': udi['id'],
-							'avatar': UP.avatar.get45(udi)
-						})
+						var user = NS.data.get('boardusers').getRows().getById(ids[n]);
+						if (!L.isNull(user)){
+							var udi = user.cell;
+							glst += TM.replace('grow', {
+								'unm': buildUserName(udi),
+								'uid': udi['id'],
+								'avatar': UP.avatar.get45(udi)
+							})
+						}
 					}
 				}
 				
