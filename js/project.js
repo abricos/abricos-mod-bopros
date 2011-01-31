@@ -58,6 +58,18 @@ Component.entryPoint = function(){
 		return (emp(user['fnm']) && emp(user['lnm'])) ? user['unm'] : user['fnm'] + ' ' + user['lnm']; 
 	};
 	
+	var aTargetBlank = function(el){
+		if (el.tagName == 'A'){
+			el.target = "_blank";
+		}
+		var chs = el.childNodes;
+		for (var i=0;i<chs.length;i++){
+			if (chs[i]){
+				aTargetBlank(chs[i]);
+			}
+		}
+	};
+	
 	var ProjectWidget = function(container, project, config){
 		config = L.merge({
 			'onLoadComments': null
@@ -80,6 +92,8 @@ Component.entryPoint = function(){
 				'tl': project.tl,
 				'bd': project.bd
 			});
+			
+			aTargetBlank(TM.getEl('prjwidget.body'));
 			
 			var __self = this;
 			
@@ -408,9 +422,14 @@ Component.entryPoint = function(){
 					
 					if (!L.isNull(DATA.get('board'))){
 						DATA.get('board').clear();
-						DATA.request();
 					}
-					
+					if (!L.isNull(DATA.get('boardusers'))){
+						DATA.get('boardusers').clear();
+					}
+					if (!L.isNull(DATA.get('boardprojectusers'))){
+						DATA.get('boardprojectusers').clear();
+					}
+					DATA.request();
 				}
 			});
 			return true;

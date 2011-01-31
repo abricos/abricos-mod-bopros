@@ -152,55 +152,6 @@ Component.entryPoint = function(){
 				});
 			}
 			TM.getEl('widget.table').innerHTML = TM.replace('table', {'rows': lst});
-
-			/*
-			NS.data.get('board').getRows().foreach(function(row){
-				var di = row.cell,
-					isnewcmt = !L.isNull(di['cmtn']) && di['cmtn'],
-					isnew = L.isNull(di['cn']),
-					myproject = di['uid'] == Brick.env.user.id;
-				
-				if (autorid != di['uid']){
-					autorid = di['uid'];
-					lst += TM.replace('rowautor', {
-						'unm': buildUserName(di),
-						'uid': di['uid'],
-						'avatar': UP.avatar.get45(di)
-					});
-				}
-				
-				var tl = di['tl'];
-				tl += " (";
-				var rrows = NS.data.get('boardprojectusers').getRows().filter({'pid': di['id']});
-				tl += rrows.count() + ") (";
-				rrows.foreach(function(rrow){
-					var user = NS.data.get('boardusers').getRows().getById(rrow.cell.uid);
-					tl += "&nbsp;&nbsp;";
-					if (L.isNull(user)){
-						tl += "null";
-					}else{
-						tl += buildUserName(user.cell);
-					}
-				});
-				tl += ")";
-				
-				lst += TM.replace('row', {
-					'id': di['id'],
-					'uid': di['uid'],
-					'ispublish': (di['uid'] == Brick.env.user.id && di['pb'] == 0 ? '' : 'none'),
-					'isedit': myproject ? '' : 'none',
-					'unm': buildUserName(di),
-					'pb': Brick.dateExt.convert(di['pb']),
-					'cmt': di['cmt'],
-					'iscmtnew': (isnewcmt ? '' : 'none'),
-					'cmtn': (isnewcmt ? di['cmtn'] : '0'),
-					'isnew': (isnew ? '' : 'none'),
-					'isremove': myproject ? '' : 'none',
-					'tl': tl
-				});
-			});
-			TM.getEl('widget.table').innerHTML = TM.replace('table', {'rows': lst});
-			/**/
 		},
 		onResize: function(rel){
 			var el = this._TM.getEl('widget.container');
