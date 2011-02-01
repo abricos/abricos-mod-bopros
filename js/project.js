@@ -64,9 +64,7 @@ Component.entryPoint = function(){
 		}
 		var chs = el.childNodes;
 		for (var i=0;i<chs.length;i++){
-			if (chs[i]){
-				aTargetBlank(chs[i]);
-			}
+			if (chs[i]){ aTargetBlank(chs[i]); }
 		}
 	};
 	
@@ -307,15 +305,27 @@ Component.entryPoint = function(){
 			TM.getEl('prjeditwidget.tl').value = project.tl;
 			this.editor.setContent(project.bd);
 			
+			var users = {};
+			for(var n in project.users){
+				var u = project.users[n];
+				users[n] = {'id': n, 'fnm':u['fnm'], 'lnm':u['lnm'], 'unm':u['unm'], 'r':u['r'], 'w':u['w']};
+			}
+			this.users = users;
+			var groups = {};
+			for (var n in project.groups){
+				var g = project.users[n];
+				groups[n] = {'id': n, 'gnm':g['gnm'], 'r':g['r'], 'w':g['w']};
+			}
+			this.groups = groups;
+			
 			this.renderUsers();
 			this.renderGroups();
 		},
 		destroy: function(){ },
 		renderUsers: function(){
 			var TM = this._TM, T = this._T, lst = "";
-			var users = this.project.users;
-			for (var id in users){
-				var di = users[id];
+			for (var id in this.users){
+				var di = this.users[id];
 				lst += TM.replace('prjedrowusr', {
 					'id': id, 'unm': buildUserName(di),
 					'r': di['r']*1 > 0 ? 'checked' : '',
@@ -326,9 +336,8 @@ Component.entryPoint = function(){
 		},
 		renderGroups: function(){
 			var TM = this._TM, T = this._T, lst = "";
-			var groups = this.project.groups;
-			for (var id in groups){
-				var di = groups[id];
+			for (var id in this.groups){
+				var di = this.groups[id];
 				lst += TM.replace('prjedrowgrp', {
 					'id': id, 'gnm': di['gnm'],
 					'r': di['r']*1 > 0 ? 'checked' : '',
@@ -338,13 +347,15 @@ Component.entryPoint = function(){
 			TM.getEl('prjeditwidget.tablegrp').innerHTML = TM.replace('prjedtablegrp', {'rows': lst});
 		},
 		appendUser: function(user){
-			user = L.merge({ 'r': 0, 'w': 0 }, user || {});
-			this.project.users[user.id] = user;
+			if (this.users[user.id]){ return; }
+			user = L.merge({ 'r': 1, 'w': 1}, user || {});
+			this.users[user.id] = user;
 			this.renderUsers();
 		},
 		appendGroup: function(group){
-			group = L.merge({ 'r': 0, 'w': 0 }, group || {});
-			this.project.groups[group.id] = group;
+			if (this.groups[group.id]){ return; }
+			group = L.merge({ 'r': 1, 'w': 1}, group || {});
+			this.groups[group.id] = group;
 			this.renderGroups();
 		},
 		onClick: function(el){
@@ -362,59 +373,64 @@ Component.entryPoint = function(){
 				return true;
 			}
 
-			var prefix = el.id.replace(/([0-9]+$)/, '');
-			var numid = el.id.replace(prefix, "");
+			var prefix = el.id.replace(/([0-9]+$)/, ''),
+				numid = el.id.replace(prefix, "");
+			var tpu = TId['prjedrowusr'], tpg = TId['prjedrowgrp'];
+			
 			switch(prefix){
-				case (TId['prjedrowusr']['remove']+'-'): this.removeUserRole(numid); return true;			
-				case (TId['prjedrowgrp']['remove']+'-'): this.removeGroupRole(numid); return true;
+				case (tpu['remove']+'-'): this.removeUserRole(numid); return true;
+				case (tpu['r']+'-'): 
+				case (tpu['w']+'-'): 
+					this.clickUserRole(numid); return true;
+				
+				case (tpg['remove']+'-'): this.removeGroupRole(numid); return true;
+				case (tpg['r']+'-'): 
+				case (tpg['w']+'-'): 
+					this.clickGroupRole(numid); return true;
 			}
 			return false;
 		},
+		userRole: function(flag, userid){ return Dom.get(this._TId['prjedrowusr'][flag]+'-'+userid).checked ? 1 : 0; },
+		groupRole: function(flag, groupid){ return Dom.get(this._TId['prjedrowgrp'][flag]+'-'+groupid).checked ? 1 : 0; },
+		clickUserRole: function(id){
+			this.users[id]['r'] = this.userRole('r', id);
+			this.users[id]['w'] = this.userRole('w', id);
+			this.renderUsers();
+		},
+		clickGroupRole: function(id){
+			this.groups[id]['r'] = this.groupRole('r', id);
+			this.groups[id]['w'] = this.groupRole('w', id);
+			this.renderGroups();
+		},
 		removeUserRole: function(userid){
-			delete this.project.users[userid];
+			delete this.users[userid];
 			this.renderUsers();
 		},		
-		removeGroupRole: function(userid){
-			delete this.project.groups[userid];
+		removeGroupRole: function(groupid){
+			delete this.groups[groupid];
 			this.renderGroups();
 		},
 		save: function(draft){
 			draft = draft || false;
-			var TM = this._TM, TId = this._TId;
+			var TM = this._TM, TId = this._TId;	
 			
 			var prj = {
 				'id': this.project.id,
+				'uid': this.project.uid,
 				'tl': TM.getEl('prjeditwidget.tl').value,
 				'bd': this.editor.getContent(),
 				'isdraft': draft,
-				users: {},
-				groups: {}
+				users: this.users,
+				groups: this.groups
 			};
-			
-			for (var id in this.project.users){
-				var user = this.project.users[id];
-				prj.users[id] = {
-					'id': id,
-					'r': Dom.get(TId['prjedrowusr']['r']+'-'+id).checked ? 1 : 0,
-					'w': Dom.get(TId['prjedrowusr']['w']+'-'+id).checked ? 1 : 0
-				};
-			}
-			for (var id in this.project.groups){
-				var group = this.project.groups[id];
-				prj.groups[id] = {
-					'id': id,
-					'r': Dom.get(TId['prjedrowgrp']['r']+'-'+id).checked ? 1 : 0,
-					'w': Dom.get(TId['prjedrowgrp']['w']+'-'+id).checked ? 1 : 0
-				};
-			}
-			Brick.widget.LoadPanel.show();
+			// Brick.widget.LoadPanel.show();
 			Brick.ajax('bopros', {
 				'data': {
 					'do': 'projectsave',
 					'project': prj
 				},
 				'event': function(request){
-					Brick.widget.LoadPanel.hide();
+					// Brick.widget.LoadPanel.hide();
 					var project = request.data;
 					if (!L.isNull(project)){
 						CACHE.project[project.id] = project;
@@ -592,6 +608,12 @@ Component.entryPoint = function(){
 		},
 		onLoad: function(){
 			this._TM.getEl('finduserpanel.result').innerHTML = this._TM.replace('firestable', {'rows': ''});
+			
+			var el = this._TM.getEl('finduserpanel.findact'),
+				__self = this;
+			E.on(el, 'keypress', function(e){
+				if (__self.onKeyPress(E.getTarget(e), e)){ E.stopEvent(e); }
+			});
 		},
 		renderUsers: function(users){
 			if (L.isNull(users)){ return; }
@@ -608,6 +630,12 @@ Component.entryPoint = function(){
 				});
 			}
 			this._TM.getEl('finduserpanel.result').innerHTML = this._TM.replace('firestable', {'rows': lst});
+		},
+		onKeyPress: function(el, e){
+			if (e.keyCode != 13){ return false; }
+
+			this.findUser();
+			return true;
 		},
 		onClick: function(el){
 			var TId = this._TId;

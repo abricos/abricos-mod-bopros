@@ -50,7 +50,7 @@ Component.entryPoint = function(){
 	};
 	BoardWidget.prototype = {
 		init: function(container){
-			buildTemplate(this, 'widget,table,row,rowwait,grow,urow');
+			buildTemplate(this, 'widget,table,row,rowwait,grow,urow,empty');
 			container.innerHTML = this._TM.replace('widget');
 			
 			this.tables = new Brick.mod.sys.TablesManager(NS.data, 
@@ -75,6 +75,12 @@ Component.entryPoint = function(){
 			this.render(); 
 		},
 		render: function(){
+			var TM = this._TM;
+			if (NS.data.get('board').getRows().count() < 1){
+				TM.getEl('widget.table').innerHTML = TM.replace('empty');
+				return;
+			}
+			
 			var gs = {};
 			NS.data.get('board').getRows().foreach(function(row){
 				var di = row.cell, g = [di['uid']];
@@ -102,16 +108,14 @@ Component.entryPoint = function(){
 				}
 				return 0;
 			});
-			
-			var TM = this._TM, lst = "";
-			
+			var lst = "";
 			for (var i=0;i<ngs.length;i++){
 				var g = ngs[i], glst = "", ulst = "";
 				
 				// список пользователей в группе
 				var ids = g.key.split(' ');
 				for (var n in ids){
-					if (Brick.env.user.id != ids[n]){  
+					if (Brick.env.user.id != ids[n] || (Brick.env.user.id == ids[n] && ids.length == 1)){  
 						var user = NS.data.get('boardusers').getRows().getById(ids[n]);
 						if (!L.isNull(user)){
 							var udi = user.cell;
@@ -167,6 +171,7 @@ Component.entryPoint = function(){
 		onClick: function(el){
 			var TId = this._TId, tp = TId['widget'];
 			switch(el.id){
+			case TId['empty']['bappend']: 
 			case tp['bappend']: 
 				API.showProjectEditorPanel(0);
 				return true;

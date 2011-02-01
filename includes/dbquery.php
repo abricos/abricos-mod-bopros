@@ -19,19 +19,6 @@ class BoprosQuery {
 	 * @param unknown_type $groupids
 	 */
 	public static function BoardProjectUsers(CMSDatabase $db, $userid, $groupids){
-		
-		/*
-			SELECT 
-				p.projectid + p.userid,
-				p.projectid as pid,
-				p.userid as uid,
-				1 as r, 1 as w
-			FROM ".$db->prefix."bps_project p
-			WHERE p.userid=".bkint($userid)." AND p.deldate=0
-		
-			UNION
-		/**/
-		
 		$sql = "
 			SELECT
 				CONCAT(ur1.projectid,'-',ur1.userid) as id,
@@ -50,8 +37,8 @@ class BoprosQuery {
 				WHERE ur.userid=".bkint($userid)." AND p.deldate=0 AND p.publish>0
 			) ps
 			LEFT JOIN ".$db->prefix."bps_userrole ur1 ON ps.projectid=ur1.projectid
+			WHERE ur1.userid>0
 		";
-	
 		return $db->query_read($sql);
 	}
 	
@@ -71,10 +58,10 @@ class BoprosQuery {
 				u.lastname as lnm,
 				u.avatar as avt
 			FROM (
-			
 				SELECT 
 					p.projectid,
-					p.userid
+					p.userid,
+					p.userid as avtor
 				FROM ".$db->prefix."bps_project p
 				WHERE p.userid=".bkint($userid)." AND p.deldate=0
 				
@@ -82,15 +69,15 @@ class BoprosQuery {
 			
 				SELECT 
 					ur.projectid,
-					ur.userid
+					ur.userid,
+					p.userid as avtor
 				FROM ".$db->prefix."bps_userrole ur
 				INNER JOIN ".$db->prefix."bps_project p ON p.projectid=ur.projectid
 				WHERE ur.userid=".bkint($userid)." AND p.deldate=0 AND p.publish > 0
 			) ps
 			LEFT JOIN ".$db->prefix."bps_userrole ur1 ON ps.projectid=ur1.projectid
-			INNER JOIN ".$db->prefix."user u ON ur1.userid=u.userid
+			INNER JOIN ".$db->prefix."user u ON ur1.userid=u.userid OR ps.avtor=u.userid
 		";
-	
 		return $db->query_read($sql);
 	}
 	

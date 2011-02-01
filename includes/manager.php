@@ -126,7 +126,6 @@ class BoprosManager extends ModuleManager {
 			$utmanager = CMSRegistry::$instance->GetUserTextManager();
 			$prj->tl = $utmanager->Parser($prj->tl);
 			$prj->bd = $utmanager->Parser($prj->bd);
-
 		}
 		
 		$publish = false;
@@ -149,16 +148,17 @@ class BoprosManager extends ModuleManager {
 		
 		$sendNotify = $publish;
 		
-		// обновить информацию по правам пользователей
 		$users = $this->ProjectUserList($prj->id, true);
 
 		$arr = get_object_vars($prj->users);
+		// обновить информацию по правам пользователей
 		foreach ($users as $cuser){
-			$u = &$arr[$cuser['id']];
+			$rUserId = $cuser['id'];
+			$u = &$arr[$rUserId];
 			if (empty($u)){
-				BoprosQuery::UserRoleRemove($this->db, $prj->id, $cuser['id']);
+				BoprosQuery::UserRoleRemove($this->db, $prj->id, $rUserId);
 			}else{
-				BoprosQuery::UserRoleUpdate($this->db, $prj->id, $u->id, $u->r, $u->w);
+				BoprosQuery::UserRoleUpdate($this->db, $prj->id, $rUserId, $u->r, $u->w);
 				$u->f = 'u';
 			}
 		}
@@ -172,17 +172,18 @@ class BoprosManager extends ModuleManager {
 		$groups = $this->ProjectGroupList($prj->id, true);
 		$arr = get_object_vars($prj->groups);
 		foreach ($groups as $cgroup){
-			$g = &$arr[$cgroup['id']];
+			$rGroupId = $cgroup['id'];
+			$g = &$arr[$rGroupId];
 			if (empty($g)){
-				BoprosQuery::GroupRoleRemove($this->db, $prj->id, $cgroup['id']);
+				BoprosQuery::GroupRoleRemove($this->db, $prj->id, $rGroupId);
 			}else{
-				BoprosQuery::GroupRoleUpdate($this->db, $prj->id, $g->id, $g->r, $g->w);
+				BoprosQuery::GroupRoleUpdate($this->db, $prj->id, $rGroupId, $g->r, $g->w);
 				$g->f = 'u';
 			}
 		}
 		foreach ($arr as $g){
 			if (empty($g->f)){
-				BoprosQuery::GroupRoleAppend($this->db, $prj->id, $g->id, $g->r, $g->w);
+				BoprosQuery::GroupRoleAppend($this->db, $prj->id, $rGroupId, $g->r, $g->w);
 			}
 		}
 		$project = $this->Project($prj->id); 

@@ -5,24 +5,10 @@
 			height:22px; margin-left:24px; margin-top:10px;
 		">
 		<div style="color:#99CC33; font-weight:bold; display: inline; ">{v#unm}</div>
-		<div style="padding-left: 10px; color: #777755; display: inline; font-size: 10px;">{v#dl}</div>
+		<div style="padding-left: 10px; color: #777755; display: inline;">{v#dl}</div>
 	</div>
 	<div style="padding:0 3px 0 15px;">{v#msg}</div>
 </div>
-
-<!--{prjremovepanel}-->
-<div class='hd'>Удаление проекта</div>
-<div class='bd'>
-	<div class="field">
-		<p>Вы действительно хотите переместить проект <strong>"{v#tl}"</strong> в архив?</p>
-		<p>Примечание: Проекты в архиве перестают быть доступными пользователям.</p>
-		<div class="buttons right">
-			<input type="button" value="Переместить в архив" id="{i#bremove}" class="btn" />
-			<input type="button" value="Отмена" id="{i#bcancel}" class="btn" />
-		</div>
-	</div>
-</div>
-
 
 <!--{prjpanel}-->
 <div class='hd'>{v#tl}</div>
@@ -116,9 +102,9 @@
 
 <!--{prjeditwidget}-->
 <div class="field" style="width: 780px;">
-	<p>
-		Название проекта:&nbsp;<input id="{i#tl}" type="text" style="width: 300px;"/>
-	</p>
+	<div style="margin-bottom: 5px;">
+		Название проекта:&nbsp;<br /><input id="{i#tl}" type="text" style="width: 350px;"/>
+	</div>
 	<textarea id="{i#editor}" style="width: 740px; height: 200px"></textarea>
 	
 	<h3>Права пользователей/групп на этот проект:</h3>
@@ -199,6 +185,15 @@
 			<table style="margin-top: 10px;"><tbody>
 				<tr>
 					<td colspan="2">
+						<h3>Поиск по учетной записи</h3>
+					</td>
+				</tr>
+				<tr>
+					<td>Учетная запись пользователя</td>
+					<td><input id="{i#username}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
 						<h3>Поиск по имени и фамилии</h3>
 					</td>
 				</tr>
@@ -209,15 +204,6 @@
 				<tr>
 					<td>Фамилия </td>
 					<td><input id="{i#lastname}" type="text" style="width: 300px; margin-top: 5px;" /></td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<h3>Поиск по учетной записи</h3>
-					</td>
-				</tr>
-				<tr>
-					<td>Учетная запись пользователя</td>
-					<td><input id="{i#username}" type="text" style="width: 300px; margin-top: 5px;" /></td>
 				</tr>
 			</tbody></table>
 			<div class="buttons">
