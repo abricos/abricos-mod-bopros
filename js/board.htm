@@ -5,23 +5,25 @@
 </div>
 
 <!--{widget}-->
-<table style="width: 100%"><tbody><tr>
-	<td>
-		<div style="height: 18px; width: 30px; display: inline;">
-			<img src="/images/loading.gif" id="{i#wait}" style="display: none"/>
+<div class="aw-bopros">
+	<table style="width: 100%"><tbody><tr>
+		<td>
+			<div style="height: 18px; width: 30px; display: inline;">
+				<img src="/images/loading.gif" id="{i#wait}" style="display: none"/>
+			</div>
+			<div style="display: inline;">
+				<a href="#" id="{i#bappend}">Создать проект</a>
+			</div>
+		</td>
+		<td style="text-align: right;">
+			<a href="#" id="{i#help}" style="margin-right: 10px;">Помощь</a>
+			<a href="#" id="{i#brefresh}">Обновить</a>
+		</td>
+	</tr></tbody></table>
+	<div id="{i#container}" class="board">
+		<div id="{i#table}" style="padding: 5px;">
+			Идет загрузка проектов. Пожалуйста, подождите...
 		</div>
-		<div style="display: inline;">
-			<a href="#" id="{i#bappend}">Создать проект</a>
-		</div>
-	</td>
-	<td style="text-align: right;">
-		<a href="#" id="{i#help}" style="margin-right: 10px;">Помощь</a>
-		<a href="#" id="{i#brefresh}">Обновить</a>
-	</td>
-</tr></tbody></table>
-<div id="{i#container}" style="width: 100%; height: 300px; overflow-y: scroll; margin-bottom: 10px; margin-top: 8px; padding-bottom: 20px; border:1px solid #CBCBCB;">
-	<div id="{i#table}">
-		Идет загрузка проектов. Пожалуйста, подождите...
 	</div>
 </div>
 
@@ -38,7 +40,7 @@
 </div>
 
 <!--{table}-->
-<table class="bk-table-def" style="border: 0">
+<table style="border: 0; width: 100%;">
 	<tbody>{v#rows}</tbody>
 </table>
 
@@ -48,14 +50,33 @@
 </tr>
 
 <!--{row}-->
-<tr valign="top" style="border-bottom:1px solid #CBCBCB;">
-	<td>
-		<table class="bk-table-def" style="border: 0">
+<tr class="group-row">
+	<td colspan="2">
+		<div class="group-row-header group-row-hshow">
+			<table style="width: 100%"><tbody><tr>
+				<td>
+					<span title="Пользователи: {v#gusers}">ID: {v#gkey}</span>
+					<span id="{i#infnew}" style="display: none;">
+						<span>Новых: {v#allnew}</span>
+					</span>
+				
+				</td>
+				<td style="text-align: right">
+					<a href="#" id="{i#ghide}-{v#gid}">Свернуть</a>
+					<a href="#" id="{i#gshow}-{v#gid}" style="display: none;">Развернуть</a>
+				</td>
+			</tr></tbody></table>
+		</div>
+	</td>
+</tr>
+<tr valign="top" id="{i#grow}-{v#gid}">
+	<td style="width: 200px;">
+		<table style="border: 0; width: 100%; margin-bottom: 10px;">
 			<tbody>{v#group}</tbody>
 		</table>
 	</td>
 	<td>
-		<table class="bk-table-def" style="border: 0">
+		<table style="border: 0; width: 100%; margin-bottom: 10px;">
 			<tbody>{v#projects}</tbody>
 		</table>
 	</td>
@@ -64,25 +85,29 @@
 <!--{grow}-->
 <tr valign="top">
 	<td style="font-size: 112%;">
-		<a style="display: none" href="#" class="show-user-profile user-{v#uid}">{v#avatar}</a>
-		<a href="#" class="show-user-profile user-{v#uid}">
-			<span style="vertical-align: top; color: black; margin-left: 5px;">{v#unm}</span>
-		</a>
+		<div class="username">
+			<a style="display: none" href="#" class="show-user-profile user-{v#uid}">{v#avatar}</a>
+			<a href="#" class="show-user-profile user-{v#uid}" style="color: black;">
+				{v#unm}
+			</a>
+		</div>
 	</td>
 </tr>
 
 <!--{urow}-->
 <tr valign="top">
 	<td style="width: 90%">
-		<a href="#" id="{i#view}-{v#id}" title="Открыть проект">{v#tl}</a>&nbsp;
-		(
-			<span title="Кол-во комментариев">{v#cmt}</span>
-			<span style="display: {v#iscmtnew}">
-				&nbsp;
-				<span title="Из них новых" style="color: red;">+{v#cmtn}</span>
-			</span>
-		)
-		&nbsp;<span style="color: red; font-size: 9px; display: {v#isnew};">new</span>
+		<div style="margin-bottom: 2px;">
+			<a href="#" id="{i#view}-{v#id}" title="Открыть проект">{v#tl}</a>&nbsp;
+			(
+				<span title="Кол-во комментариев">{v#cmt}</span>
+				<span style="display: {v#iscmtnew}">
+					&nbsp;
+					<span title="Из них новых" style="color: red;">+{v#cmtn}</span>
+				</span>
+			)
+			&nbsp;<span style="color: red; font-size: 9px; display: {v#isnew};">new</span>
+		</div>
 	</td>
 	<td><a href="#" id="{i#publish}-{v#id}" style="display: {v#ispublish}">Опубликовать</a></td>
 	<td>

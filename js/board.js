@@ -32,6 +32,8 @@ Component.entryPoint = function(){
 		NS.data = new Brick.util.data.byid.DataSet('bopros');
 	}
 	
+	Brick.util.CSS.update(Brick.util.CSS['bopros']['board']);
+	
 	var buildTemplate = function(w, templates){
 		var TM = TMG.build(templates), T = TM.data, TId = TM.idManager;
 		w._TM = TM; w._T = T; w._TId = TId;
@@ -52,6 +54,8 @@ Component.entryPoint = function(){
 		init: function(container){
 			buildTemplate(this, 'widget,table,row,rowwait,grow,urow,empty');
 			container.innerHTML = this._TM.replace('widget');
+			
+			this.groupids = [];
 			
 			this.tables = new Brick.mod.sys.TablesManager(NS.data, 
 					[
@@ -108,10 +112,12 @@ Component.entryPoint = function(){
 				}
 				return 0;
 			});
+			this.groupids = ngs;
 			var lst = "";
 			for (var i=0;i<ngs.length;i++){
 				var g = ngs[i], glst = "", ulst = "";
 				
+				var gusersnm = [];
 				// список пользователей в группе
 				var ids = g.key.split(' ');
 				for (var n in ids){
@@ -119,6 +125,9 @@ Component.entryPoint = function(){
 						var user = NS.data.get('boardusers').getRows().getById(ids[n]);
 						if (!L.isNull(user)){
 							var udi = user.cell;
+							
+							
+							gusersnm[gusersnm.length] = buildUserName(udi);
 							glst += TM.replace('grow', {
 								'unm': buildUserName(udi),
 								'uid': udi['id'],
@@ -151,6 +160,9 @@ Component.entryPoint = function(){
 				}
 				
 				lst += TM.replace('row', {
+					'gid': i,
+					'gusers': gusersnm.join(', '),
+					'gkey': g.key.split(' ').join(''),
 					'group': glst,
 					'projects': ulst
 				});
@@ -179,26 +191,41 @@ Component.entryPoint = function(){
 			case tp['help']: this.help(); return true;
 			}
 			
-			var prefix = el.id.replace(/([0-9]+$)/, '');
-			var numid = el.id.replace(prefix, "");
+			var prefix = el.id.replace(/([0-9]+$)/, ''),
+				numid = el.id.replace(prefix, "");
+			
+			tp = TId['urow'];
 			switch(prefix){
-			case (TId['urow']['publish']+'-'):
+			case (tp['publish']+'-'):
 				this.projectPublish(numid);
 				return true;
-			case (TId['urow']['edit']+'-'):
-			case (TId['urow']['editimg']+'-'):
+			case (tp['edit']+'-'):
+			case (tp['editimg']+'-'):
 				API.showProjectEditorPanel(numid);
 				return true;
-			case (TId['urow']['remove']+'-'):
-			case (TId['urow']['removeimg']+'-'):
+			case (tp['remove']+'-'):
+			case (tp['removeimg']+'-'):
 				this.projectRemove(numid);
 				return true;
-			case (TId['urow']['view']+'-'):
+			case (tp['view']+'-'):
 				this.projectShow(numid);
 				return true;
 			}
 
+			tp = TId['row'];
+			switch(prefix){
+			case (tp['ghide']+'-'): this.showHideGroup(false, numid); return true;
+			case (tp['gshow']+'-'): this.showHideGroup(true, numid); return true;
+			}
+
 			return false;
+		},
+		showHideGroup: function(isshow, gid){
+			var tp = this._TId['row'];
+			Dom.get(tp['grow']+'-'+gid).style.display = isshow ? '' : 'none';
+			Dom.get(tp['ghide']+'-'+gid).style.display = isshow ? '' : 'none';
+			Dom.get(tp['gshow']+'-'+gid).style.display = !isshow ? '' : 'none';
+			
 		},
 		projectShow: function(projectid){
 			var __self = this;
