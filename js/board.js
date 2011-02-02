@@ -162,6 +162,7 @@ Component.entryPoint = function(){
 				lst += TM.replace('row', {
 					'gid': i,
 					'gusers': gusersnm.join(', '),
+					'gucnt': gusersnm.length,
 					'gkey': g.key.split(' ').join(''),
 					'group': glst,
 					'projects': ulst
@@ -216,6 +217,9 @@ Component.entryPoint = function(){
 			switch(prefix){
 			case (tp['ghide']+'-'): this.showHideGroup(false, numid); return true;
 			case (tp['gshow']+'-'): this.showHideGroup(true, numid); return true;
+			case (tp['newproject']+'-'):
+				API.showProjectEditorPanel(0, this.groupids[numid].key);
+				return true;
 			}
 
 			return false;
@@ -225,7 +229,6 @@ Component.entryPoint = function(){
 			Dom.get(tp['grow']+'-'+gid).style.display = isshow ? '' : 'none';
 			Dom.get(tp['ghide']+'-'+gid).style.display = isshow ? '' : 'none';
 			Dom.get(tp['gshow']+'-'+gid).style.display = !isshow ? '' : 'none';
-			
 		},
 		projectShow: function(projectid){
 			var __self = this;

@@ -287,11 +287,11 @@ Component.entryPoint = function(){
 	};
 	NS.ProjectRoleWidget = ProjectRoleWidget;	
 	
-	var ProjectEditorWidget = function(container, project){
-		this.init(container, project);
+	var ProjectEditorWidget = function(container, project, groupkey){
+		this.init(container, project, groupkey);
 	};
 	ProjectEditorWidget.prototype = {
-		init: function(container, project){
+		init: function(container, project, groupkey){
 			this.project = project;
 			buildTemplate(this, 'prjeditwidget,prjedtableusr,prjedrowwaitusr,prjedrowusr,prjedtablegrp,prjedrowwaitgrp,prjedrowgrp');
 			var TM = this._TM;
@@ -305,10 +305,20 @@ Component.entryPoint = function(){
 			TM.getEl('prjeditwidget.tl').value = project.tl;
 			this.editor.setContent(project.bd);
 			
-			var users = {};
-			for(var n in project.users){
+			var users = {},
+				fromUsers = project.users;
+			
+			var a = project.id*1 == 0 && L.isString(groupkey) ? groupkey.split(' ') : [];
+			if (a.length > 0){
+				for (var i=0; i<a.length; i++){
+					var user = NS.data.get('boardusers').getRows().getById(a[i]).cell;
+					fromUsers[user.id] = user;
+				}
+			}
+		
+			for(var n in fromUsers){
 				var u = project.users[n];
-				users[n] = {'id': n, 'fnm':u['fnm'], 'lnm':u['lnm'], 'unm':u['unm'], 'r':u['r'], 'w':u['w']};
+				users[n] = {'id': n, 'fnm':u['fnm'], 'lnm':u['lnm'], 'unm':u['unm'], 'r': u['r'] || 1, 'w':u['w'] || 1};
 			}
 			this.users = users;
 			var groups = {};
@@ -453,8 +463,9 @@ Component.entryPoint = function(){
 	};
 	NS.ProjectEditorWidget = ProjectEditorWidget;
 	
-	var ProjectEditorPanel = function(project){
+	var ProjectEditorPanel = function(project, groupkey){
 		this.project = project;
+		this.groupkey = groupkey;
 		ProjectEditorPanel.superclass.constructor.call(this, {
 			fixedcenter: true
 		});
@@ -473,7 +484,7 @@ Component.entryPoint = function(){
 				TM.getEl('prjeditpanel.bsavedraft').style.display = '';
 			}
 
-			this.projectEditWidget = new ProjectEditorWidget(this._TM.getEl('prjeditpanel.widget'), this.project);
+			this.projectEditWidget = new ProjectEditorWidget(this._TM.getEl('prjeditpanel.widget'), this.project, this.groupkey);
 		},
 		onClick: function(el){
 			if (this.projectEditWidget.onClick(el)){ return true; }
@@ -498,7 +509,8 @@ Component.entryPoint = function(){
 	});
 	NS.ProjectEditorPanel = ProjectEditorPanel;
 
-	API.showProjectEditorPanel = function(projectid){
+	API.showProjectEditorPanel = function(projectid, groupkey){
+		groupkey = groupkey || '';
 		if (CACHE.project[projectid]){
 			new ProjectEditorPanel(CACHE.project[projectid]);
 			return;
@@ -517,7 +529,7 @@ Component.entryPoint = function(){
 						CACHE.project[projectid] = project;
 					}
 					Brick.widget.LoadPanel.hide();
-					new ProjectEditorPanel(project);
+					new ProjectEditorPanel(project, groupkey);
 				}
 			});
 		});

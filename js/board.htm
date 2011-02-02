@@ -55,11 +55,12 @@
 		<div class="group-row-header group-row-hshow">
 			<table style="width: 100%"><tbody><tr>
 				<td>
-					<span title="Пользователи: {v#gusers}">ID: {v#gkey}</span>
-					<span id="{i#infnew}" style="display: none;">
-						<span>Новых: {v#allnew}</span>
-					</span>
-				
+					<a href="#" id="{i#gedit}-{v#gid}" title="Изменить название группы">ID: {v#gkey}</a>
+					&nbsp;&nbsp;&nbsp;
+					<a href="#" id="{i#newproject}-{v#gid}" title="Создать проект в этой группе">Создать проект</a>
+					&nbsp;&nbsp;&nbsp;
+					<span title="Участники: {v#gusers}">Уч.: {v#gucnt}</span>
+					
 				</td>
 				<td style="text-align: right">
 					<a href="#" id="{i#ghide}-{v#gid}">Свернуть</a>
