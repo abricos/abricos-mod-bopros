@@ -311,8 +311,11 @@ Component.entryPoint = function(){
 			var a = project.id*1 == 0 && L.isString(groupkey) ? groupkey.split(' ') : [];
 			if (a.length > 0){
 				for (var i=0; i<a.length; i++){
-					var user = NS.data.get('boardusers').getRows().getById(a[i]).cell;
-					fromUsers[user.id] = user;
+					var userid = a[i]*1,
+						user = NS.data.get('boardusers').getRows().getById(userid);
+					if (Brick.env.user.id*1 != userid && !L.isNull(user)){
+						fromUsers[user.id] = user.cell;
+					}
 				}
 			}
 		

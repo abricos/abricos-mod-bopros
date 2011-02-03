@@ -5,18 +5,18 @@
 </div>
 
 <!--{widget}-->
-<div class="aw-bopros">
+<div class="aw-bopros" id="{i#id}">
 	<table style="width: 100%"><tbody><tr>
 		<td>
 			<div style="height: 18px; width: 30px; display: inline;">
 				<img src="/images/loading.gif" id="{i#wait}" style="display: none"/>
 			</div>
 			<div style="display: inline;">
-				<a href="#" id="{i#bappend}">Создать проект</a>
+				<a href="#" id="{i#bappend}" title="Создать новый проект и определить участников для обсуждения">Новый проект</a>
 			</div>
 		</td>
 		<td style="text-align: right;">
-			<a href="#" id="{i#help}" style="margin-right: 10px;">Помощь</a>
+			<a href="#" id="{i#help}" style="margin-right: 10px; display: none;">Помощь</a>
 			<a href="#" id="{i#brefresh}">Обновить</a>
 		</td>
 	</tr></tbody></table>
@@ -52,7 +52,7 @@
 <!--{row}-->
 <tr class="group-row">
 	<td colspan="2">
-		<div class="group-row-header group-row-hshow">
+		<div id="{i#ghead}-{v#gid}" class="group-row-header group-row-hshow">
 			<table style="width: 100%"><tbody><tr>
 				<td>
 					<a href="#" id="{i#gedit}-{v#gid}" title="Изменить название группы">ID: {v#gkey}</a>
@@ -84,22 +84,22 @@
 </tr>
 
 <!--{grow}-->
-<tr valign="top">
-	<td style="font-size: 112%;">
+<tr valign="top" class="grp-row {i#id}row">
+	<td style="font-size: 112%; width: 180px;">
 		<div class="username">
 			<a style="display: none" href="#" class="show-user-profile user-{v#uid}">{v#avatar}</a>
-			<a href="#" class="show-user-profile user-{v#uid}" style="color: black;">
-				{v#unm}
+			<a href="#" class="show-user-profile user-{v#uid}">
+				{v#unm} 
 			</a>
 		</div>
 	</td>
 </tr>
 
 <!--{urow}-->
-<tr valign="top">
+<tr id="{i#id}-{v#id}" valign="top" class="prj-row {i#id}row">
 	<td style="width: 90%">
-		<div style="margin-bottom: 2px;">
-			<a href="#" id="{i#view}-{v#id}" title="Открыть проект">{v#tl}</a>&nbsp;
+		<div class="prj-title">
+			<a href="#" id="{i#view}-{v#id}" title="Открыть проект. Автор: {v#unm}">{v#tl}</a>&nbsp;
 			(
 				<span title="Кол-во комментариев">{v#cmt}</span>
 				<span style="display: {v#iscmtnew}">

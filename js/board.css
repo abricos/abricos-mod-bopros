@@ -39,3 +39,21 @@
 	text-decoration: none;
 	color: black;
 }
+
+.aw-bopros .board .prj-row td {
+	padding: 3px 0 4px 0;
+}
+
+.aw-bopros .board .prj-title {
+	margin-left: 5px;
+}
+.aw-bopros .board .prj-title a,
+.aw-bopros .board .prj-title a:visited
+{
+	text-decoration: none;
+}
+
+.aw-bopros .board table tr.selected th,
+.aw-bopros .board table tr.selected {
+	background: none repeat scroll 0 0 #FFF0C6;
+}
