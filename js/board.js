@@ -115,8 +115,29 @@ Component.entryPoint = function(){
 			});
 			this.userColors = userColors;
 			
-			var gs = {};
+			// сортировать
+			var aprs = [];
 			NS.data.get('board').getRows().foreach(function(row){
+				aprs[aprs.length] = row;
+			});
+			
+			var pGetNumSort = function(di){
+				var n1 = di['pb'], n2 = di['cmtld'];
+				return Math.max(L.isNull(n1)?0:n1*1, L.isNull(n2)?0:n2*1);
+			};
+			
+			var naprs = aprs.sort(function(a, b){
+				var n1 = pGetNumSort(a.cell), 
+					n2 = pGetNumSort(b.cell);
+				if (n1 > n2){ return -1;
+				}else if(n1 < n2){ return 1; }
+				return 0;
+			});
+			
+			var gs = {};
+			// NS.data.get('board').getRows().foreach(function(row){
+			for (var prjIndex=0;prjIndex<naprs.length; prjIndex++){
+				var row = naprs[prjIndex];
 				var di = row.cell, g = [di['uid']], chk = {};
 				chk[di['uid']]=true;
 				NS.data.get('boardprojectusers').getRows().filter({'pid': di['id']}).foreach(function(rrow){
@@ -127,11 +148,12 @@ Component.entryPoint = function(){
 					}
 				});
 				var key = g.sort().join(' ');
-				if (!gs[key]){ gs[key] = {'count': 0, 'rows': {}}; }
+				if (!gs[key]){ gs[key] = {'count': 0, 'rows': []}; }
 				var r = gs[key];
 				r.count++;
-				r.rows[di['id']] = row;
-			});
+				r.rows[r.rows.length] = row;
+			};
+			// });
 			var ngs = [];
 			for (var i in gs){
 				gs[i]['key'] = i;
@@ -168,7 +190,8 @@ Component.entryPoint = function(){
 					}
 				}
 				
-				for (var ii in g.rows){
+				// строительтсво списка проектов в группе
+				for (var ii=0;ii<g.rows.length;ii++){
 					var row = g.rows[ii];
 					var di = row.cell,
 						isnewcmt = !L.isNull(di['cmtn']) && di['cmtn'],
@@ -224,15 +247,7 @@ Component.entryPoint = function(){
 			case (tp['view']+'-'): this.mouseMoveProjectRow(numid, on); return true;
 			}
 			
-			var elRowId = tp['id']+'row', isRowStep = 0;
-			var isRow = function(fel){
-				if (isRowStep++ > 5 || fel.id == TId['widget']['id'] ){ return null; }
-				if (fel.tagName == 'TR' && Dom.hasClass(fel, elRowId)){
-					return fel;
-				}
-				return isRow(fel.parentNode);
-			};
-			var fel = isRow(el); 
+			var fel = this.findElByClass(el, tp['id']+'row'); 
 			if (!L.isNull(fel)){
 				var prefix = fel.id.replace(/([0-9]+$)/, ''),
 					numid = fel.id.replace(prefix, "");
@@ -240,6 +255,18 @@ Component.entryPoint = function(){
 			}
 			
 			return false;
+		},
+		findElByClass: function(el, className){
+			var TId = this._TId, isRowStep = 0;
+			var isRow = function(fel){
+				// Brick.console(fel);
+				if (isRowStep++ > 7 || fel.id == TId['widget']['id'] ){ return null; }
+				if (fel.tagName == 'TR' && Dom.hasClass(fel, className)){
+					return fel;
+				}
+				return isRow(fel.parentNode);
+			};
+			return isRow(el); 
 		},
 		mouseMoveProjectRow: function(prjid, on){
 			var tp = this._TId['urow'],
@@ -300,16 +327,23 @@ Component.entryPoint = function(){
 
 			tp = TId['row'];
 			switch(prefix){
-			case (tp['ghide']+'-'): this.showHideGroup(false, numid); return true;
-			case (tp['gshow']+'-'): this.showHideGroup(true, numid); return true;
+			case (tp['ghide']+'-'): this.showHideGroup(numid, false); return true;
+			case (tp['gshow']+'-'): this.showHideGroup(numid, true); return true;
 			case (tp['newproject']+'-'):
 				API.showProjectEditorPanel(0, this.groupids[numid].key);
 				return true;
 			}
-
+			var fel = this.findElByClass(el, tp['id']+'row');
+			if (!L.isNull(fel)){
+				var prefix = fel.id.replace(/([0-9]+$)/, ''),
+					numid = fel.id.replace(prefix, "");
+				
+				var isshow = Dom.get(tp['grow']+'-'+numid).style.display == '';
+				this.showHideGroup(numid, !isshow);
+			}
 			return false;
 		},
-		showHideGroup: function(isshow, gid){
+		showHideGroup: function(gid, isshow){
 			var tp = this._TId['row'];
 			Dom.get(tp['grow']+'-'+gid).style.display = isshow ? '' : 'none';
 			Dom.get(tp['ghide']+'-'+gid).style.display = isshow ? '' : 'none';
