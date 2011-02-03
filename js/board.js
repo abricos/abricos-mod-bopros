@@ -135,7 +135,6 @@ Component.entryPoint = function(){
 			});
 			
 			var gs = {};
-			// NS.data.get('board').getRows().foreach(function(row){
 			for (var prjIndex=0;prjIndex<naprs.length; prjIndex++){
 				var row = naprs[prjIndex];
 				var di = row.cell, g = [di['uid']], chk = {};
@@ -148,20 +147,33 @@ Component.entryPoint = function(){
 					}
 				});
 				var key = g.sort().join(' ');
-				if (!gs[key]){ gs[key] = {'count': 0, 'rows': []}; }
+				if (!gs[key]){ gs[key] = {'count': 0, 'rows': [], 'sort': 0}; }
 				var r = gs[key];
 				r.count++;
 				r.rows[r.rows.length] = row;
 			};
-			// });
 			var ngs = [];
 			for (var i in gs){
 				gs[i]['key'] = i;
 				ngs[ngs.length] = gs[i]; 
 			}
-			var ngs = ngs.sort(function(a, b){
-				if (a.count > b.count){ return -1;
-				}else if(a.count < b.count){ return 1; }
+			
+			// подсчет среднестатестической велечины актуальности группы
+			for (var i=0;i<ngs.length;i++){
+				var g = ngs[i], count = g.count, sum = 0;
+				
+				for (var ii=0;ii<g.rows.length;ii++){
+					var n = pGetNumSort(g.rows[ii].cell);
+					if (n > 0){ sum += n; }else{ count--; }
+				}
+				if (count > 0){
+					g.sort = sum/count;
+				}
+			}
+
+			ngs = ngs.sort(function(a, b){
+				if (a.sort < b.sort){ return -1;
+				}else if(a.sort > b.sort){ return 1; }
 				return 0;
 			});
 			this.groupids = ngs;

@@ -95,6 +95,13 @@ class BoprosQuery {
 				WHERE p.contentid=c.contentid
 			) as cmt
 			,(
+				SELECT c4.dateedit as cmtld
+				FROM ".$db->prefix."cmt_comment c4
+				WHERE p.contentid=c4.contentid
+				ORDER BY c4.dateedit DESC
+				LIMIT 1
+			) as cmtld
+			,(
 				SELECT count( c3.commentid ) AS cmtn
 				FROM ".$db->prefix."cmt_comment c3
 				LEFT JOIN ".$db->prefix."cmt_lastview lv ON c3.contentid = lv.contentid AND c3.commentid > lv.commentid
@@ -115,10 +122,6 @@ class BoprosQuery {
 			SELECT
 				p.projectid as id,
 				p.userid as uid,
-				u.username as unm,
-				u.firstname as fnm,
-				u.lastname as lnm,
-				u.avatar as avt,
 				p.title as tl,
 				p.dateline as dl,
 				p.publish as pb,
@@ -126,7 +129,6 @@ class BoprosQuery {
 				".$sqlComment.",
 				0 as o
 			FROM ".$db->prefix."bps_project p
-			INNER JOIN ".$db->prefix."user u ON p.userid=u.userid
 			WHERE p.userid=".bkint($userid)." AND p.deldate=0
 		";
 		
@@ -137,10 +139,6 @@ class BoprosQuery {
 			SELECT
 				p.projectid as id,
 				p.userid as uid,
-				u.username as unm,
-				u.firstname as fnm,
-				u.lastname as lnm,
-				u.avatar as avt,
 				p.title as tl,
 				0 as dl,
 				p.publish as pb,
@@ -150,7 +148,6 @@ class BoprosQuery {
 				1 as o
 			FROM ".$db->prefix."bps_userrole ur
 			INNER JOIN ".$db->prefix."bps_project p ON p.projectid=ur.projectid
-			INNER JOIN ".$db->prefix."user u ON p.userid=u.userid
 			WHERE ur.userid=".bkint($userid)." AND ur.isread > 0 AND p.publish > 0 AND p.deldate=0
 		";
 		
@@ -167,10 +164,6 @@ class BoprosQuery {
 				SELECT
 					p.projectid as id,
 					p.userid as uid,
-					u.username as unm,
-					u.firstname as fnm,
-					u.lastname as lnm,
-					u.avatar as avt,
 					p.title as tl ,
 					0 as dl,
 					p.publish as pb,
@@ -180,13 +173,14 @@ class BoprosQuery {
 					2 as o
 				FROM ".$db->prefix."bps_grouprole gr
 				INNER JOIN ".$db->prefix."bps_project p ON p.projectid=gr.projectid
-				INNER JOIN ".$db->prefix."user u ON p.userid=u.userid
 				WHERE gr.isread > 0 AND (".implode($where, " OR ").") AND p.publish > 0 AND p.deldate=0
 			";
 		}
+		/*
 		$sql .= "
 			ORDER BY o, lnm, fnm, unm, pb DESC
 		";
+		/**/
 		return $db->query_read($sql);
 	}
 	
