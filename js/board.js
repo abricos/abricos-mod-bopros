@@ -172,8 +172,8 @@ Component.entryPoint = function(){
 			}
 
 			ngs = ngs.sort(function(a, b){
-				if (a.sort < b.sort){ return -1;
-				}else if(a.sort > b.sort){ return 1; }
+				if (a.sort > b.sort){ return -1;
+				}else if(a.sort < b.sort){ return 1; }
 				return 0;
 			});
 			this.groupids = ngs;
@@ -202,6 +202,7 @@ Component.entryPoint = function(){
 					}
 				}
 				
+				var gNewCnt = 0, gNewCmtCnt = 0;
 				// строительтсво списка проектов в группе
 				for (var ii=0;ii<g.rows.length;ii++){
 					var row = g.rows[ii];
@@ -209,6 +210,9 @@ Component.entryPoint = function(){
 						isnewcmt = !L.isNull(di['cmtn']) && di['cmtn'],
 						myproject = di['uid'] == Brick.env.user.id,
 						isnew = L.isNull(di['cn']) && !myproject;
+					
+					gNewCnt += (isnew ? 1 : 0);
+					gNewCmtCnt += (isnewcmt ? di['cmtn']*1 : 0);
 					
 					var udi = NS.data.get('boardusers').getRows().getById(di['uid']).cell;
 					
@@ -231,6 +235,8 @@ Component.entryPoint = function(){
 				
 				lst += TM.replace('row', {
 					'gid': i,
+					'gnewcnt': gNewCnt,
+					'gnewcmtcnt': gNewCmtCnt,
 					'gusers': gusersnm.join(', '),
 					'gucnt': gusersnm.length,
 					'gkey': g.key.split(' ').join(''),

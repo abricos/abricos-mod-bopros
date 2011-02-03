@@ -103,4 +103,21 @@ if ($updateManager->isUpdate('0.1.0.1')){
 	");
 }
 
+if ($updateManager->isUpdate('0.1.0.2')){
+
+	// пользовательские настройки группы
+	$db->query_write("
+		CREATE TABLE IF NOT EXISTS ".$pfx."bps_groupconfig (
+		  `groupconfigid` int(10) unsigned NOT NULL auto_increment COMMENT '',
+		  `userid` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Идентификатор пользователя',
+		  `groupkey` varchar(250) NOT NULL DEFAULT '' COMMENT 'Ключ группы - сортированный список ID пользователей через пробел',
+		  `title` varchar(250) NOT NULL DEFAULT '' COMMENT 'Название группы',
+		  `ord` int(2) unsigned NOT NULL DEFAULT 0 COMMENT 'Сортировка',
+		  `ishide` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '1=Свернуть/0=Развернуть',
+		  PRIMARY KEY  (`groupconfigid`)
+		)".$charset
+	);
+	
+}
+
 ?>
