@@ -10,7 +10,6 @@
 
 .aw-bopros .board .group-row {
 }
-
 .aw-bopros .board .group-row-header {
 	height: 17px; 
 	/*cursor:pointer;/**/
@@ -21,23 +20,14 @@
 	color: #6A7398;
 	margin-bottom: 7px;
 }
-
 .aw-bopros .board .group-row-hshow {
 	background:none repeat scroll 0 0 #cadae5; 
 }		
-
 .aw-bopros .board .group-row-hhide {
 	background:none repeat scroll 0 0 #dddddd; 
 }		
 
-.aw-bopros .board .username {
-	margin: 0 4px 2px 14px;
-}
-.aw-bopros .board .username a,
-.aw-bopros .board .username a:visited
-{
-	text-decoration: none;
-	color: black;
+.aw-bopros .board .prj-row {
 }
 
 .aw-bopros .board .prj-row td {
@@ -57,3 +47,14 @@
 .aw-bopros .board table tr.selected {
 	background: none repeat scroll 0 0 #FFF0C6;
 }
+
+.aw-bopros .username {
+	margin: 0 4px 2px 7px;
+}
+.aw-bopros .username a,
+.aw-bopros .username a:visited
+{
+	text-decoration: none;
+	color: black;
+}
+

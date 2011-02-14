@@ -9,10 +9,9 @@ var Component = new Brick.Component();
 Component.requires = {
 	yahoo: ['dom', 'dragdrop'],
 	mod:[
-        {name: 'user', files: ['permission.js']},
 		{name: 'sys', files: ['data.js', 'container.js','wait.js','editor.js']},
         {name: 'uprofile', files: ['viewer.js']},
-        {name: 'bopros', files: ['roles.js']}
+        {name: 'bopros', files: ['users.js','roles.js']}
 	]
 };
 Component.entryPoint = function(){
@@ -90,6 +89,9 @@ Component.entryPoint = function(){
 				'tl': project.tl,
 				'bd': project.bd
 			});
+
+			this.userListWidget = new NS.UserListWidget(TM.getEl('prjwidget.usergroup'), project.id);
+			NS.data.request();
 			
 			aTargetBlank(TM.getEl('prjwidget.body'));
 			
@@ -132,16 +134,23 @@ Component.entryPoint = function(){
 		},
 		onClick: function(el){
 			switch(el.id){
-			case this._TId['prjwidget']['broles']: 
-				this.showRoles();  
-				return true;
+			// case this._TId['prjwidget']['broles']: this.showRoles(); return true;
 			}
 
 			return false;
 		},
 		onResize: function(rel){
-			var el = this._TM.getEl('prjwidget.container');
-			el.style.height = (rel.height - 70)+'px';
+			var TM = this._TM;
+			var elCol1 = TM.getEl('prjwidget.col1'),
+				elCol2 = TM.getEl('prjwidget.col2'),
+				elCol22 = TM.getEl('prjwidget.usergroup');
+			
+			var dh = 58, dw = 236;
+			elCol1.style.height = 
+				elCol2.style.height = (rel.height - dh)+'px';
+			elCol22.style.height = (rel.height - dh-23)+'px';
+			
+			elCol1.style.width = (rel.width - dw)+'px'
 		},
 		showRoles: function(){
 			new ProjectRolePanel(this.project);
@@ -155,7 +164,7 @@ Component.entryPoint = function(){
 			'onLoadComments': null
 		}, overconfig || {});
 		ProjectPanel.superclass.constructor.call(this, {
-			fixedcenter: true, width: '780px', height: '500px',
+			fixedcenter: true, width: '900px', height: '440px',
 			controlbox: 1
 			// ,state: Brick.widget.Panel.STATE_MAXIMIZED
 		});

@@ -1,0 +1,27 @@
+<!--{widget}-->
+<div id="{i#table}" style="padding: 5px;">
+	Идет загрузка. Пожалуйста, подождите...
+</div>
+
+<!--{table}-->
+<table style="border: 0; width: 100%;">
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{rowwait}-->
+<tr valign="top">
+	<td>Идет загрузка данных...</td>
+</tr>
+
+<!--{row}-->
+<tr valign="top" class="grp-row {i#id}row">
+	<td>
+		<div class="username">
+			<a href="#" class="show-user-profile user-{v#uid}">{v#avatar}</a><br />
+			<a href="#" class="show-user-profile user-{v#uid}">
+				{v#unm} 
+			</a>
+		</div>
+		<div style="border-bottom:1px solid #CBCBCB; margin-top: 3px; margin-bottom: 3px;"></div>
+	</td>
+</tr>
