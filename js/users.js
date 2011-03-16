@@ -68,7 +68,10 @@ Component.entryPoint = function(){
 		},
 		onDataLoadWait: function(tables){ },
 		onDataLoadComplete: function(tables){
-			
+			this.tables = tables;
+			this.build();
+		},
+		build: function(){
 			var userColors = {}, inc = 0;
 			// определить таблицу цветов для пользователей
 			NS.data.get('boardusers').getRows().foreach(function(row){
@@ -141,6 +144,16 @@ Component.entryPoint = function(){
 			});
 			this.clouds = ngs;
 		},
+		getClouds: function(rebuild){
+			if (rebuild){
+				this.clouds = null;
+			}
+
+			if (L.isNull(this.clouds)){
+				this.build();
+			}
+			return this.clouds;
+		},
 		getCloudUserByProjectId: function(projectid){
 			var ngs = this.clouds;
 			for (var i=0;i<ngs.length;i++){
@@ -199,7 +212,7 @@ Component.entryPoint = function(){
 			var ids = cloud.key.split(' ');
 			
 			for (var n in ids){
-				if (Brick.env.user.id != ids[n] || (Brick.env.user.id == ids[n] && ids.length == 1)){  
+				// if (Brick.env.user.id != ids[n] || (Brick.env.user.id == ids[n] && ids.length == 1)){  
 					var user = NS.data.get('boardusers').getRows().getById(ids[n]);
 					if (!L.isNull(user)){
 						var udi = user.cell;
@@ -210,7 +223,7 @@ Component.entryPoint = function(){
 							'avatar': UP.avatar.get45(udi)
 						})
 					}
-				}
+				// }
 			}
 			TM.getEl('widget.table').innerHTML = TM.replace('table', {'rows': lst});
 		}

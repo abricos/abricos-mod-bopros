@@ -11,7 +11,7 @@ Component.requires = {
 	mod:[
 		{name: 'sys', files: ['data.js', 'container.js','wait.js','editor.js']},
         {name: 'uprofile', files: ['viewer.js']},
-        {name: 'bopros', files: ['users.js', 'project.js']}
+        {name: 'bopros', files: ['find.js', 'users.js', 'project.js']}
 	]
 };
 Component.entryPoint = function(){
@@ -81,8 +81,7 @@ Component.entryPoint = function(){
 				return;
 			}
 			
-			var ngs = this.cm.clouds;
-			
+			var ngs = this.cm.getClouds(true);
 			var lst = "";
 			for (var i=0;i<ngs.length;i++){
 				var g = ngs[i], glst = "", ulst = "";
@@ -91,7 +90,7 @@ Component.entryPoint = function(){
 				// список пользователей в группе
 				var ids = g.key.split(' ');
 				for (var n in ids){
-					if (Brick.env.user.id != ids[n] || (Brick.env.user.id == ids[n] && ids.length == 1)){  
+					// if (Brick.env.user.id != ids[n] || (Brick.env.user.id == ids[n] && ids.length == 1)){  
 						var user = NS.data.get('boardusers').getRows().getById(ids[n]);
 						if (!L.isNull(user)){
 							var udi = user.cell;
@@ -105,7 +104,7 @@ Component.entryPoint = function(){
 								'avatar': UP.avatar.get45(udi)
 							})
 						}
-					}
+					// }
 				}
 				
 				var gNewCnt = 0, gNewCmtCnt = 0;
@@ -140,6 +139,7 @@ Component.entryPoint = function(){
 				
 				lst += TM.replace('row', {
 					'gid': i,
+					'dispuserappend': R.isAdmin ? '' : 'none',
 					'gnewcnt': gNewCnt,
 					'gnewcmtcnt': gNewCmtCnt,
 					'gusers': gusersnm.join(', '),
@@ -210,6 +210,8 @@ Component.entryPoint = function(){
 		},
 		refresh: function(){
 			NS.data.get('board').clear();
+			NS.data.get('boardusers').clear();
+			NS.data.get('boardprojectusers').clear();
 			NS.data.request();
 		},
 		help: function(){			
@@ -254,6 +256,9 @@ Component.entryPoint = function(){
 			case (tp['newproject']+'-'):
 				API.showProjectEditorPanel(0, this.cm.clouds[numid].key);
 				return true;
+			case (tp['userappend']+'-'):
+				this.userAppendInCloud(this.cm.clouds[numid]);
+				return true;
 			}
 			var fel = this.findElByClass(el, tp['id']+'row');
 			if (!L.isNull(fel)){
@@ -264,6 +269,38 @@ Component.entryPoint = function(){
 				this.showHideGroup(numid, !isshow);
 			}
 			return false;
+		},
+		userAppendInCloud: function(cloud){ // добавить пользователя в группу
+			var a = cloud.key.split(' '),
+				__self = this;
+			
+			var prjids = [];
+			for (var i in cloud.rows){
+				prjids[prjids.length] = cloud.rows[i].id;
+			}
+
+			new NS.UserAppendPanel(function(user){
+				for (var i=0; i<a.length; i++){
+					if (a[i]*1 == user.id*1){
+						return;
+					}
+				}
+				new NS.NewUserInCloudPanel(user, a, function(){
+					__self.onDataLoadWait(__self.tables);
+					Brick.ajax('bopros', {
+						'data': {
+							'do': 'userappendincloud',
+							'userid': user.id,
+							'cloudkey': cloud.key,
+							'prjs': prjids.join(' ')
+						},
+						'event': function(request){
+							__self.refresh();
+						}
+					});
+					
+				});
+			});
 		},
 		showHideGroup: function(gid, isshow){
 			var tp = this._TId['row'];
@@ -389,5 +426,41 @@ Component.entryPoint = function(){
 		}
 	});
 	NS.ProjectRemovePanel = ProjectRemovePanel;
+
+
+	var NewUserInCloudPanel = function(user, cloudusers, callback){
+		this.user = user;
+		this.cloudusers = cloudusers;
+		this.callback = callback;
+		NewUserInCloudPanel.superclass.constructor.call(this, {
+			fixedcenter: true, width: '500px',
+			modal: true
+		});
+	};
+	YAHOO.extend(NewUserInCloudPanel, Brick.widget.Panel, {
+		initTemplate: function(){
+			buildTemplate(this, 'newuserincloud');
+			
+				var ids = this.cloudusers, arr = [];
+				for (var n in ids){
+					arr[arr.length] =
+						UP.viewer.buildUserName(NS.data.get('boardusers').getRows().getById(ids[n]).cell);
+				}
+				return this._TM.replace('newuserincloud', {
+					'tl': UP.viewer.buildUserName(this.user),
+					'glst': arr.join(', ')
+				});
+			
+		},
+		onClick: function(el){
+			var tp = this._TId['newuserincloud'];
+			switch(el.id){
+			case tp['bappend']: this.callback(); this.close(); return true;
+			case tp['bcancel']: this.close(); return true;
+			}
+			return false;
+		}
+	});
+	NS.NewUserInCloudPanel = NewUserInCloudPanel;
 
 };

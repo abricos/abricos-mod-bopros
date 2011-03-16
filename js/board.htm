@@ -56,12 +56,10 @@
 			<table style="width: 100%"><tbody><tr>
 				<td>
 					<a href="#" id="{i#gedit}-{v#gid}" title="Название данной группы участников. Нажмите сюда чтобы установить свое название.">ID: {v#gkey}</a>
-					&nbsp;&nbsp;&nbsp;
-					<a href="#" id="{i#newproject}-{v#gid}" title="Эта функция позволяет Вам добавить новую тему для дискуссии в эту группу участников">Добавить тему в эту группу</a>
-					&nbsp;&nbsp;&nbsp;
-					<span title="Участники: {v#gusers}">Кол-во участников: {v#gucnt}</span>
-					&nbsp;&nbsp;&nbsp;
-					<span style="color: green;" title="Новые проекты">{v#gnewcnt}</span>/<span style="color: red;" title="Новые комментарии">{v#gnewcmtcnt}</span>
+					<a href="#" id="{i#newproject}-{v#gid}" style="margin-left: 12px;" title="Эта функция позволяет Вам добавить новую тему для дискуссии в эту группу участников">Добавить тему в эту группу</a>
+					<a href="#" id="{i#userappend}-{v#gid}" style="margin-left: 12px; display: {v#dispuserappend};" title="Эта функция позволяет Вам добавить участника в эту группу участников">Добавить участника</a>
+					<span style="margin-left: 12px;" title="Участники: {v#gusers}">Кол-во участников: {v#gucnt}</span>
+					<span style="color: green; margin-left: 12px;" title="Новые проекты">{v#gnewcnt}</span>/<span style="color: red;" title="Новые комментарии">{v#gnewcmtcnt}</span>
 				</td>
 				<td style="text-align: right">
 					<a href="#" id="{i#ghide}-{v#gid}">Свернуть</a>
@@ -132,6 +130,23 @@
 		<p>Примечание: Проекты в архиве перестают быть доступными пользователям.</p>
 		<div class="buttons right">
 			<input type="button" value="Переместить в архив" id="{i#bremove}" class="btn" />
+			<input type="button" value="Отмена" id="{i#bcancel}" class="btn" />
+		</div>
+	</div>
+</div>
+
+<!--{newuserincloud}-->
+<div class='hd'>Добавить участника в группу</div>
+<div class='bd'>
+	<div class="field">
+		<p>
+			Вы действительно хотите добавить нового участника <br />
+			<strong>{v#tl}</strong><br/> 
+			в группу:<br />
+			{v#glst}?
+		</p>
+		<div class="buttons right">
+			<input type="button" value="Добавить" id="{i#bappend}" class="btn" />
 			<input type="button" value="Отмена" id="{i#bcancel}" class="btn" />
 		</div>
 	</div>

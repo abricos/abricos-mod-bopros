@@ -65,30 +65,73 @@ class BoprosManager extends ModuleManager {
 	
 	public function AJAX($d){
 		switch($d->do){
-			case "finduser": return $this->FindUser($d->firstname, $d->lastname, $d->username, true);
+			case 'finduser': return $this->FindUser($d->firstname, $d->lastname, $d->username, true);
 			case 'project': return $this->Project($d->projectid);
 			case 'projectsave': return $this->ProjectSave($d->project);
 			case 'projectpublish': return $this->ProjectPublish($d->projectid);
 			case 'projectremove': return $this->ProjectRemove($d->projectid);
+			case 'userappendincloud': return $this->CloudUserAppend($d->userid, $d->cloudkey, $d->prjs);
 		}
 		return null;
 	}
 	
-	public function BoardProjectUsers(){
+	/**
+	 * Добавить нового участника в облако пользователей
+	 * 
+	 * @param integer $newuserid идентификатор пользователя
+	 * @param string $cloudkey ключ, идентификаторы участников разделенные пробелом 
+	 * @param string $projects идентификаторы проектов разделенные пробелом 
+	 */
+	public function CloudUserAppend($newuserid, $cloudkey, $projects){
+		// в текущей версии доступно только для администратора "Доски проектов"
+		if (!$this->IsAdminRole()){ return null; }
+
+		// составить список проектов, которые видны этой группе участников
+		// и в каждый этот проект добавить нового участника
+
+		$uids = explode(" ", $cloudkey);
+		$prjs = explode(" ", $projects);
+		
+		$bpUsers = $this->BoardProjectUsers(true);
+		
+		print_r($bpUsers);
+		
+		foreach ($prjs as $pid){
+			BoprosQuery::UserRoleAppend($this->db, $pid, $newuserid, 1, 1);
+		}
+	}
+		
+	/**
+	 * Список проектов доступные этому пользователю включая свои
+	 * со списком пользователей на каждый проект и их роли
+	 * 
+	 * @param boolean $retarray
+	 * @return указатель на выборку из базы
+	 */
+	public function BoardProjectUsers($retarray = false){
 		if (!$this->IsViewRole()){ return null; }
 		$groupids = $this->user->info['group'];
-		return BoprosQuery::BoardProjectUsers($this->db, $this->userid, $groupids);
-	}
-
-	public function BoardUsers(){
-		if (!$this->IsViewRole()){ return null; }
-		return BoprosQuery::BoardUsers($this->db, $this->userid);
+		$rows = BoprosQuery::BoardProjectUsers($this->db, $this->userid, $groupids);
+		return $retarray ? $this->ToArray($rows) : $rows; 
 	}
 	
-	public function Board(){
+	/**
+	 * Список пользователей участвующих на доске проектов этого пользователя
+	 */
+	public function BoardUsers($retarray = false){
+		if (!$this->IsViewRole()){ return null; }
+		$rows = BoprosQuery::BoardUsers($this->db, $this->userid);
+		return $retarray ? $this->ToArray($rows) : $rows; 
+	}
+	
+	/**
+	 * Доска проектов - список проектов доступных пользователю
+	 */
+	public function Board($retarray = false){
 		if (!$this->IsViewRole()){ return null; }
 		$groupids = $this->user->info['group'];
-		return BoprosQuery::Board($this->db, $this->userid, $groupids);
+		$rows = BoprosQuery::Board($this->db, $this->userid, $groupids);
+		return $retarray ? $this->ToArray($rows) : $rows; 
 	}
 	
 	public function MyProjectInfo($projectid){
@@ -194,7 +237,12 @@ class BoprosManager extends ModuleManager {
 		return $project;
 	}
 	
-	public function ProjectSendNotify($projectid){
+	/**
+	 * Отправить приглашение всем пользователям проекта
+	 * @param integer $projectid идентификатор проекта
+	 * @param integer $userid Если > 0, то отправить приглашение только этому пользователю
+	 */
+	public function ProjectSendNotify($projectid, $userid = 0){
 		$project = $this->Project($projectid);
 		 
 		// подписать пользователя и отправить ему уведомление
@@ -204,6 +252,8 @@ class BoprosManager extends ModuleManager {
 		
 		$users = $this->ProjectUserList($projectid, true);
 		foreach($users as $ur){
+			if ($userid > 0 && $ur['id']*1 != $userid*1){ continue; }
+			
 			BoprosQuery::ProjectConfigAppend($this->db, $projectid, $ur['id'], 1);
 			
 			$user = UserQuery::User($this->db, $ur['id']);
@@ -349,7 +399,7 @@ class BoprosManager extends ModuleManager {
 	
 	
 	public function FindUser($firstname, $lastname, $username, $retarray = false){
-		if (!((!empty($firstname) && !empty($lastname)) || !empty($username))){ return null; }
+		if (!(!empty($firstname) || !empty($lastname) || !empty($username))){ return null; }
 		
 		if (!$this->IsWriteRole()){ return null; }
 		$rows = BoprosQuery::FindUser($this->db, $this->userid, $firstname, $lastname, $username);

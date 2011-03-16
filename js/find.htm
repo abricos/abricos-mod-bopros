@@ -1,0 +1,107 @@
+<!--{finduserpanel}-->
+<div class='hd'>Поиск</div>
+<div class='bd'>
+	<div class="field">
+		<div id="{i#findact}">
+			<table style="margin-top: 10px;"><tbody>
+				<tr>
+					<td colspan="2">
+						<h3>Поиск по учетной записи</h3>
+					</td>
+				</tr>
+				<tr>
+					<td>Учетная запись пользователя</td>
+					<td><input id="{i#username}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<h3>Поиск по имени и фамилии</h3>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 150px;">Имя </td>
+					<td><input id="{i#firstname}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+				<tr>
+					<td>Фамилия </td>
+					<td><input id="{i#lastname}" type="text" style="width: 300px; margin-top: 5px;" /></td>
+				</tr>
+			</tbody></table>
+			<div class="buttons">
+				<input type="button" value="Найти" id="{i#bfind}" />
+				<div id="{i#wait}" style="display: none;"><img src="/images/loading.gif" />идет поиск...</div>
+			</div>
+		</div>
+		<h3>Результат поиска</h3>
+		<div id="{i#result}" style="height: 200px;"></div>
+	</div>
+	<div class="field">
+		<div class="buttons right">
+			<input type="button" value="Закрыть" id="{i#bclose}" />
+		</div>
+	</div>
+</div>
+
+<!--{firestable}-->
+<table id="{i#id}" class="bk-table-def" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th>Пользователь</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{firesrow}-->
+<tr valign="top">
+	<td>{v#unm}</td>
+	<td>
+		<a href="#" id="{i#append}-{v#id}">Добавить</a>
+	</td>
+</tr>
+
+<!--{firesrowwait}-->
+<tr valign="top">
+	<td colspan="2">Идет загрузка данных. Пожалуйста, подождите...</td>
+</tr>
+
+
+<!--{groupappanel}-->
+<div class='hd'>Группы</div>
+<div class='bd'>
+	<div class="field">
+		<div id="{i#table}" style="height: 200px;"></div>
+	</div>
+	<div class="field">
+		<div class="buttons right">
+			<input type="button" value="Закрыть" id="{i#bclose}" />
+		</div>
+	</div>
+</div>
+
+<!--{groupaptable}-->
+<table id="{i#id}" class="bk-table-def" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th>Группа</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>{v#rows}</tbody>
+</table>
+
+<!--{groupaprow}-->
+<tr valign="top">
+	<td>{v#gnm}</td>
+	<td>
+		<a href="#" id="{i#append}-{v#id}">Добавить</a>
+	</td>
+</tr>
+
+<!--{groupaprowwait}-->
+<tr valign="top">
+	<td colspan="2">Идет загрузка данных. Пожалуйста, подождите...</td>
+</tr>
+
+
