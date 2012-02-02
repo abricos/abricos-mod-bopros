@@ -10,7 +10,7 @@
 
 require_once 'dbquery.php';
 
-class BoprosManager extends ModuleManager {
+class BoprosManager extends Ab_ModuleManager {
 	
 	/**
 	 * 
@@ -18,30 +18,20 @@ class BoprosManager extends ModuleManager {
 	 */
 	public $module = null;
 	
-	/**
-	 * User
-	 * @var User
-	 */
-	public $user = null;
-	public $userid = 0;
-	
-	public function BoprosManager(BoprosModule $module){
-		parent::ModuleManager($module);
-		
-		$this->user = CMSRegistry::$instance->modules->GetModule('user');
-		$this->userid = $this->user->info['userid'];
+	public function __construct(BoprosModule $module){
+		parent::__construct($module);
 	}
 	
 	public function IsAdminRole(){
-		return $this->module->permission->CheckAction(BoprosAction::ADMIN) > 0;
+		return $this->IsRoleEnable(BoprosAction::ADMIN);
 	}
 	
 	public function IsWriteRole(){
-		return $this->module->permission->CheckAction(BoprosAction::WRITE) > 0;
+		return $this->IsRoleEnable(BoprosAction::WRITE);
 	}
 	
 	public function IsViewRole(){
-		return $this->module->permission->CheckAction(BoprosAction::VIEW) > 0;
+		return $this->IsRoleEnable(BoprosAction::VIEW);
 	}
 	
 	public function DSProcess($name, $rows){
@@ -166,7 +156,7 @@ class BoprosManager extends ModuleManager {
 		$prj->id = intval($prj->id);
 		if (!$this->IsAdminRole()){
 			// порезать теги и прочие гадости
-			$utmanager = CMSRegistry::$instance->GetUserTextManager();
+			$utmanager = Abricos::TextParser();
 			$prj->tl = $utmanager->Parser($prj->tl);
 			$prj->bd = $utmanager->Parser($prj->bd);
 		}
@@ -270,7 +260,7 @@ class BoprosManager extends ModuleManager {
 				"prj" => $project->bd,
 				"sitename" => Brick::$builder->phrase->Get('sys', 'site_name')
 			));
-			CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
+			Abricos::Notify()->SendMail($email, $subject, $body);
 		}
 	}
 	
@@ -473,7 +463,7 @@ class BoprosManager extends ModuleManager {
 						"cmt2" => $data->bd." ",
 						"sitename" => Brick::$builder->phrase->Get('sys', 'site_name')
 					));
-					CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
+					Abricos::Notify()->SendMail($email, $subject, $body);
 				}
 			}
 		}
@@ -494,7 +484,7 @@ class BoprosManager extends ModuleManager {
 					"cmt" => $data->bd." ",
 					"sitename" => Brick::$builder->phrase->Get('sys', 'site_name')
 				));
-				CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
+				Abricos::Notify()->SendMail($email, $subject, $body);
 			}
 		}
 		
@@ -517,7 +507,7 @@ class BoprosManager extends ModuleManager {
 				"cmt" => $data->bd." ",
 				"sitename" => Brick::$builder->phrase->Get('sys', 'site_name')
 			));
-			CMSRegistry::$instance->GetNotification()->SendMail($email, $subject, $body);
+			Abricos::Notify()->SendMail($email, $subject, $body);
 		}
 	}
 }

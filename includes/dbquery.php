@@ -14,11 +14,11 @@ class BoprosQuery {
 	 * Список проектов (доступные этому пользователю включая свои)
 	 * со списком пользователей на каждый проект и их роли
 	 * 
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param unknown_type $userid
 	 * @param unknown_type $groupids
 	 */
-	public static function BoardProjectUsers(CMSDatabase $db, $userid, $groupids){
+	public static function BoardProjectUsers(Ab_Database $db, $userid, $groupids){
 		$sql = "
 			SELECT
 				CONCAT(ur1.projectid,'-',ur1.userid) as id,
@@ -45,10 +45,10 @@ class BoprosQuery {
 	/**
 	 * Список пользователей участвующих на доске проектов
 	 * 
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param unknown_type $userid
 	 */
-	public static function BoardUsers(CMSDatabase $db, $userid){
+	public static function BoardUsers(Ab_Database $db, $userid){
 		$sql = "
 			SELECT
 				DISTINCT
@@ -83,10 +83,10 @@ class BoprosQuery {
 	
 	/**
 	 * Список проектов (доска проектов) доступных пользователю
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param integer $userid
 	 */
-	public static function Board(CMSDatabase $db, $userid, $groupids){
+	public static function Board(Ab_Database $db, $userid, $groupids){
 		
 		$sqlComment = "
 			,(
@@ -184,7 +184,7 @@ class BoprosQuery {
 		return $db->query_read($sql);
 	}
 	
-	public static function UserRole(CMSDatabase $db, $projectid, $userid, $groupids){
+	public static function UserRole(Ab_Database $db, $projectid, $userid, $groupids){
 		$sql = "
 			SELECT 
 				ur.userroleid as id,
@@ -216,8 +216,8 @@ class BoprosQuery {
 	}
 	
 	
-	public static function ProjectAppend(CMSDatabase $db, $prj, $pubkey){
-		$contentid = CoreQuery::ContentAppend($db, $prj->bd, 'bopros');
+	public static function ProjectAppend(Ab_Database $db, $prj, $pubkey){
+		$contentid = Ab_CoreQuery::ContentAppend($db, $prj->bd, 'bopros');
 		
 		$sql = "
 			INSERT INTO ".$db->prefix."bps_project (userid, title, pubkey, contentid, dateline, publish) VALUES (
@@ -233,7 +233,7 @@ class BoprosQuery {
 		return $db->insert_id();
 	}
 	
-	public static function ProjectPublish(CMSDatabase $db, $projectid){
+	public static function ProjectPublish(Ab_Database $db, $projectid){
 		$sql = "
 			UPDATE ".$db->prefix."bps_project
 			SET publish=".TIMENOW."
@@ -242,7 +242,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function ProjectRemove(CMSDatabase $db, $projectid){
+	public static function ProjectRemove(Ab_Database $db, $projectid){
 		$sql = "
 			UPDATE ".$db->prefix."bps_project
 			SET deldate=".TIMENOW."
@@ -251,9 +251,9 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function ProjectUpdate(CMSDatabase $db, $prj){
+	public static function ProjectUpdate(Ab_Database $db, $prj){
 		$pinfo = BoprosQuery::ProjectInfo($db, $prj->id, true);
-		CoreQuery::ContentUpdate($db, $pinfo['ctid'], $prj->bd);
+		Ab_CoreQuery::ContentUpdate($db, $pinfo['ctid'], $prj->bd);
 		$pub = empty($pinfo['pb']) && empty($prj->isdraft) ? ",publish=".TIMENOW : "";
 		$sql = "
 			UPDATE ".$db->prefix."bps_project
@@ -265,7 +265,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function ProjectInfo(CMSDatabase $db, $projectid, $retarray = false){
+	public static function ProjectInfo(Ab_Database $db, $projectid, $retarray = false){
 		$sql = "
 			SELECT
 				p.projectid as id,
@@ -280,7 +280,7 @@ class BoprosQuery {
 		return $retarray ? $db->query_first($sql) : $db->query_read($sql);
 	}
 	
-	public static function Project(CMSDatabase $db, $projectid, $retarray = false){
+	public static function Project(Ab_Database $db, $projectid, $retarray = false){
 		$sql = "
 			SELECT
 				p.projectid as id,
@@ -304,11 +304,11 @@ class BoprosQuery {
 	
 	/**
 	 * Получить проект по идентификатору контента
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param integer $contentid
 	 * @param boolean $retarray
 	 */
-	public static function ProjectByContentId(CMSDatabase $db, $contentid, $retarray = false){
+	public static function ProjectByContentId(Ab_Database $db, $contentid, $retarray = false){
 		$sql = "
 			SELECT
 				p.projectid as id,
@@ -333,13 +333,13 @@ class BoprosQuery {
 	/**
 	 * Поиск пользователя по (имени и фамилиии) или логину
 	 * 
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param integer $userid
 	 * @param string $firstname
 	 * @param string $lastname
 	 * @param string $username
 	 */
-	public static function FindUser(CMSDatabase $db, $userid, $firstname, $lastname, $username){
+	public static function FindUser(Ab_Database $db, $userid, $firstname, $lastname, $username){
 		$where = array();
 		if (!empty($firstname)){
 			array_push($where, " UPPER(u.firstname)=UPPER('".bkstr($firstname)."') ");
@@ -365,7 +365,7 @@ class BoprosQuery {
 		return $db->query_read($sql);
 	}
 	
-	public static function UserRoleAppend(CMSDatabase $db, $projectid, $userid, $isRead, $isWrite){
+	public static function UserRoleAppend(Ab_Database $db, $projectid, $userid, $isRead, $isWrite){
 		$sql = "
 			INSERT INTO ".$db->prefix."bps_userrole (projectid, userid, isread, iswrite) VALUES
 			(
@@ -378,7 +378,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function UserRoleUpdate(CMSDatabase $db, $projectid, $userid, $isRead, $isWrite){
+	public static function UserRoleUpdate(Ab_Database $db, $projectid, $userid, $isRead, $isWrite){
 		$sql = "
 			UPDATE ".$db->prefix."bps_userrole
 			SET isread=".bkint($isRead).",
@@ -388,7 +388,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function UserRoleRemove(CMSDatabase $db, $projectid, $userid){
+	public static function UserRoleRemove(Ab_Database $db, $projectid, $userid){
 		$sql = "
 			DELETE FROM ".$db->prefix."bps_userrole
 			WHERE projectid=".bkint($projectid)." AND userid=".bkint($userid)." 
@@ -396,7 +396,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function GroupList(CMSDatabase $db){
+	public static function GroupList(Ab_Database $db){
 		$sql = "
 			SELECT 
 				groupid as id,
@@ -407,7 +407,7 @@ class BoprosQuery {
 		return $db->query_read($sql);
 	}
 	
-	public static function GroupRoleAppend(CMSDatabase $db, $projectid, $groupid, $isRead, $isWrite){
+	public static function GroupRoleAppend(Ab_Database $db, $projectid, $groupid, $isRead, $isWrite){
 		$sql = "
 			INSERT INTO ".$db->prefix."bps_grouprole (projectid, groupid, isread, iswrite) VALUES
 			(
@@ -420,7 +420,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function GroupRoleUpdate(CMSDatabase $db, $projectid, $groupid, $isRead, $isWrite){
+	public static function GroupRoleUpdate(Ab_Database $db, $projectid, $groupid, $isRead, $isWrite){
 		$sql = "
 			UPDATE ".$db->prefix."bps_grouprole
 			SET isread=".bkint($isRead).",
@@ -430,7 +430,7 @@ class BoprosQuery {
 		$db->query_write($sql);
 	}
 	
-	public static function GroupRoleRemove(CMSDatabase $db, $projectid, $groupid){
+	public static function GroupRoleRemove(Ab_Database $db, $projectid, $groupid){
 		$sql = "
 			DELETE FROM ".$db->prefix."bps_grouprole
 			WHERE projectid=".bkint($projectid)." AND groupid=".bkint($groupid)." 
@@ -440,10 +440,10 @@ class BoprosQuery {
 	
 	/**
 	 * Список пользователей и их права в проекте
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param integer $projectid
 	 */
-	public static function ProjectUserList(CMSDatabase $db, $projectid){
+	public static function ProjectUserList(Ab_Database $db, $projectid){
 		$sql = "
 			SELECT 
 				p.userid as id,
@@ -461,10 +461,10 @@ class BoprosQuery {
 	
 	/**
 	 * Список пользователей и их права на создаваемый проект
-	 * @param CMSDatabase $db 
+	 * @param Ab_Database $db 
 	 * @param integer $userid
 	 */
-	public static function ProjectUserListDefault(CMSDatabase $db, $userid){
+	public static function ProjectUserListDefault(Ab_Database $db, $userid){
 		$sql = "
 			SELECT 
 				u.userid as id,
@@ -483,10 +483,10 @@ class BoprosQuery {
 
 	/**
 	 * Список групп и их права в проекте 
-	 * @param CMSDatabase $db
+	 * @param Ab_Database $db
 	 * @param integer $projectid
 	 */
-	public static function ProjectGroupList(CMSDatabase $db, $projectid){
+	public static function ProjectGroupList(Ab_Database $db, $projectid){
 		$sql = "
 			SELECT 
 				gr.groupid as id,
@@ -503,10 +503,10 @@ class BoprosQuery {
 	/**
 	 * Список групп на создаваемый проект
 	 * 
-	 * @param CMSDatabase $db 
+	 * @param Ab_Database $db 
 	 * @param integer $groupid
 	 */
-	public static function ProjectGroupListDefault(CMSDatabase $db, $userid){
+	public static function ProjectGroupListDefault(Ab_Database $db, $userid){
 		$sql = "
 			SELECT 
 				gr.groupid as id,
@@ -522,7 +522,7 @@ class BoprosQuery {
 		return $db->query_read($sql);
 	}
 
-	public static function ProjectConfigAppend(CMSDatabase $db, $projectid, $userid, $subscribe){
+	public static function ProjectConfigAppend(Ab_Database $db, $projectid, $userid, $subscribe){
 		if (empty($userid) || empty($projectid)){ return 0; }
 		$sql = "
 			INSERT INTO ".$db->prefix."bps_projectconfig (projectid, userid, subscribe) VALUES (
@@ -535,7 +535,7 @@ class BoprosQuery {
 		return $db->insert_id();
 	}
 	
-	public static function ProjectSubscribeUserList(CMSDatabase $db, $projectid){
+	public static function ProjectSubscribeUserList(Ab_Database $db, $projectid){
 		$sql = "
 			SELECT
 				c.userid as id,

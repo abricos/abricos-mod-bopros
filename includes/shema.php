@@ -11,11 +11,11 @@
  */
 
 $charset = "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'";
-$updateManager = CMSRegistry::$instance->modules->updateManager; 
-$db = CMSRegistry::$instance->db;
+$updateManager = Ab_UpdateManager::$current; 
+$db = Abricos::$db;
 $pfx = $db->prefix;
 
-$uprofileManager = CMSRegistry::$instance->modules->GetModule('uprofile')->GetManager(); 
+$uprofileManager = Abricos::GetModule('uprofile')->GetManager(); 
 
 if ($updateManager->isInstall()){
 
@@ -23,7 +23,7 @@ if ($updateManager->isInstall()){
 	$uprofileManager->FieldAppend('firstname', 'Имя', UserFieldType::STRING, 100);
 	$uprofileManager->FieldCacheClear();
 	
-	CMSRegistry::$instance->modules->GetModule('bopros')->permission->Install();
+	Abricos::GetModule('bopros')->permission->Install();
 	
 	// проекты
 	$db->query_write("

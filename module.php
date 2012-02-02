@@ -11,15 +11,12 @@
 /**
  * Модуль "Доска проектов" 
  */
-$mod = new BoprosModule();
-CMSRegistry::$instance->modules->Register($mod);
-
-class BoprosModule extends CMSModule {
+class BoprosModule extends Ab_Module {
 	
 	private $_manager;
 	
 	function __construct(){
-		$this->version = "0.1.0.1";
+		$this->version = "0.1.1";
 		$this->name = "bopros";
 		$this->takelink = "bopros";
 		
@@ -71,5 +68,6 @@ class BoprosPermission extends CMSPermission {
 	}
 }
 
+Abricos::ModuleRegister(new BoprosModule());
 
 ?>
