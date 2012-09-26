@@ -1,6 +1,6 @@
-Brick.util.Language.add('ru',{'mod':{'bopros': {
+Brick.util.Language.add('ru',{'mod': {'{C#MODNAME}':{
 	'title': 'Доска проектов',
-	'roles':{
+	'roles': {
 		'10': 'Чтение',
 		'30': 'Запись',
 		'50': 'Администрирование'
