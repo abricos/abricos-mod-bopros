@@ -283,15 +283,15 @@ class BoprosManager extends Ab_ModuleManager {
 		$project->w = 0;
 
 		// автор проекта
-		$projec->unm = '';
-		$projec->fnm = '';
-		$projec->lnm = '';
+		$project->unm = '';
+		$project->fnm = '';
+		$project->lnm = '';
 
 		// дата создания проекта
-		$projec->dl = 0;
+		$project->dl = 0;
 		
 		// дата публикации проекта
-		$projec->pb = 0;
+		$project->pb = 0;
 		
 		$project->users = array();
 		$project->groups = array();
